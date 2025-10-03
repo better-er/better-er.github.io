@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8"/>
+    <title id="page-title"></title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            color: #333;
+        }
+
+        /* 顶部标签页 */
+        .tabs {
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            display: inline-block;
+            cursor: pointer;
+            background: #eee;
+            border: 1px solid #ccc;
+            border-radius: 4px 4px 0 0;
+            margin-right: 5px;
+        }
+
+        .tab.active {
+            background: #fff;
+            border-bottom: none;
+            font-weight: bold;
+        }
+
+        /* 输入框通用样式 */
+        textarea {
+            font-family: monospace;
+            width: 100%;
+            min-height: 24px;
+            resize: vertical;
+            box-sizing: border-box;
+            /* height: 60px;  // 移除默认高度，改为 min-height */
+        }
+
+        /* 单行模式布局 */
+        #single-mode {
+            display: none;
+        }
+
+        #multi-mode {
+            display: block;
+        }
+
+        .group {
+            margin: 15px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .alignment {
+            margin-top: 8px;
+            padding: 10px;
+            background: #f9f9f9;
+            border: 1px solid #ccc;
+            font-family: monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            overflow-x: auto;
+        }
+
+        /* 对齐行与词对 */
+        .pair-row {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            margin-bottom: 6px;
+            white-space: nowrap;
+        }
+
+        .pair-row.mismatch {
+            background: #ffebee;
+            border-left: 3px solid #f44336;
+            padding-left: 3px;
+        }
+
+        .pair {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 0 4px;
+        }
+
+        .pair:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .top {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .bottom {
+            color: #666;
+        }
+
+        .mismatch .top,
+        .mismatch .bottom {
+            color: #d32f2f !important;
+        }
+
+        /* 多行模式布局 */
+        .multi-container {
+            display: flex;
+            gap: 20px;
+        }
+
+        .multi-box {
+            flex: 1;
+        }
+
+        .multi-box h3 {
+            margin-top: 0;
+        }
+
+        .multi-preview {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f4f4f4;
+            border: 1px solid #ccc;
+            font-family: monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            height: 300px;
+            overflow-y: auto;
+            overflow-x: auto;
+        }
+
+        .multi-preview .pair-row.mismatch {
+            background: #ffebee;
+            border-left: 3px solid #f44336;
+            padding-left: 3px;
+        }
+    </style>
+    <script defer data-domain="better-er.github.io" src="https://plausible.io/js/script.tagged-events.js"></script>
+    <!-- Cloudflare Web Analytics -->
+    <script defer src='https://static.cloudflareinsights.com/beacon.min.js'
+            data-cf-beacon='{"token": "c300376ee0b349878e2a8a1a395cc9b7"}'></script>
+    <!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+<h2 id="main-title"></h2>
+
+<!-- 切换标签 -->
+<div class="tabs">
+    <div class="tab plausible-event-name=Tab+Single" id="tab-single" onclick="App.switchMode('single')"></div>
+    <div class="tab active plausible-event-name=Tab+Multi" id="tab-multi" onclick="App.switchMode('multi')"></div>
+</div>
+
+<!-- 单行模式 -->
+<div id="single-mode">
+    <p><small id="single-desc"></small></p>
+    <div id="container"></div>
+    <button onclick="App.addGroup()">添加一组</button>
+</div>
+
+<!-- 多行模式 -->
+<div id="multi-mode">
+    <p><small id="multi-desc"></small></p>
+    <div class="multi-container">
+        <div class="multi-box">
+            <h3 id="label-original"></h3>
+            <textarea id="multi-input1"></textarea>
+        </div>
+        <div class="multi-box">
+            <h3 id="label-new"></h3>
+            <textarea id="multi-input2"></textarea>
+        </div>
+    </div>
+    <h3 id="multi-preview-title"></h3>
+    <div id="multi-preview" class="multi-preview"></div>
+</div>
+
+<script>
+    /**
+     * ===================================================
+     * 常量：所有显示文本
+     * ===================================================
+     */
+    const TEXT = {
+        PAGE_TITLE: '填词音节对齐辅助',
+        MAIN_TITLE: '填词音节对齐辅助',
+        LABEL_ORIGINAL: '原词：',
+        LABEL_NEW: '新词：',
+        TAB_SINGLE: '单行编辑模式',
+        TAB_MULTI: '多行编辑模式',
+        SINGLE_DESC: '使用-表示延音，使用+表示多音节词，逐行对齐显示（音节数不匹配时警告）',
+        MULTI_DESC: '使用-表示延音，使用+表示多音节词，逐行对齐显示（音节数不匹配时警告）',
+        MULTI_PREVIEW_TITLE: '填词对齐音节预览',
+        DEFAULT_MULTI_INPUT1: `wake up wake up babe don't fear
+君+の碧+い瞳++の中+に ああ わたしはいたい`,
+        DEFAULT_MULTI_INPUT2: `顶灯照耀每一个人
+umiri++ 甩开了蒙在她脸上的面纱- 祥子 转向键盘外`
+    };
+
+    /**
+     * ===================================================
+     * App 主逻辑
+     * ===================================================
+     */
+    const STORAGE_KEY = 'token_tool_data';
+
+    const App = {
+        groupsData: [],
+        currentMode: 'multi',
+        els: {
+            singleMode: document.getElementById('single-mode'),
+            multiMode: document.getElementById('multi-mode'),
+            container: document.getElementById('container'),
+            multiInput1: document.getElementById('multi-input1'),
+            multiInput2: document.getElementById('multi-input2'),
+            multiPreview: document.getElementById('multi-preview')
+        },
+
+        /**
+         * 初始化应用
+         */
+        init() {
+            // 填充所有显示文本
+            this.setupText();
+
+            // 只处理多行部分，单行分组不初始化
+            this.loadData();
+            this.bindMultiEvents();
+            this.switchMode('multi');
+        },
+
+        setupText() {
+            document.title = TEXT.PAGE_TITLE;
+            document.getElementById('page-title').textContent = TEXT.PAGE_TITLE;
+            document.getElementById('main-title').textContent = TEXT.MAIN_TITLE;
+            document.getElementById('tab-single').textContent = TEXT.TAB_SINGLE;
+            document.getElementById('tab-multi').textContent = TEXT.TAB_MULTI;
+            document.getElementById('single-desc').textContent = TEXT.SINGLE_DESC;
+            document.getElementById('multi-desc').textContent = TEXT.MULTI_DESC;
+            document.getElementById('label-original').textContent = TEXT.LABEL_ORIGINAL;
+            document.getElementById('label-new').textContent = TEXT.LABEL_NEW;
+            document.getElementById('multi-preview-title').textContent = TEXT.MULTI_PREVIEW_TITLE;
+        },
+
+        /**
+         * 自动保存所有数据到 localStorage
+         */
+        saveData() {
+            // 单行模式数据
+            const groups = this.groupsData.map(g => ({
+                ta1: g.ta1.value,
+                ta2: g.ta2.value
+            }));
+            // 多行模式数据
+            const multi = {
+                input1: this.els.multiInput1.value,
+                input2: this.els.multiInput2.value
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({groups, multi, mode: this.currentMode}));
+        },
+
+        /**
+         * 自动加载数据
+         */
+        loadData() {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) {
+                this.els.multiInput1.value = TEXT.DEFAULT_MULTI_INPUT1;
+                this.els.multiInput2.value = TEXT.DEFAULT_MULTI_INPUT2;
+                this.groupsData = [];
+                this.els.container.innerHTML = '';
+                this.renderAlignedPairs(
+                    this.els.multiPreview,
+                    TEXT.DEFAULT_MULTI_INPUT1.split('\n'),
+                    TEXT.DEFAULT_MULTI_INPUT2.split('\n')
+                );
+                return;
+            }
+            try {
+                const {groups, multi, mode} = JSON.parse(raw);
+                // 恢复多行输入并渲染
+                if (multi) {
+                    this.els.multiInput1.value = multi.input1 || '';
+                    this.els.multiInput2.value = multi.input2 || '';
+                    this.renderAlignedPairs(
+                        this.els.multiPreview,
+                        (multi.input1 || '').split('\n'),
+                        (multi.input2 || '').split('\n')
+                    );
+                }
+                // 恢复模式
+                if (mode) {
+                    this.currentMode = mode;
+                }
+            } catch (e) {
+                // ignore parse error
+            }
+        },
+
+        /**
+         * 分词函数
+         * 支持：英文单词、中文/日文逐字、符号独立成词
+         */
+        tokenize(line) {
+            const tokens = [];
+            let word = '';
+
+            for (let i = 0; i < line.length; i++) {
+                const c = line[i];
+                const isLetterOrDigit = /[a-zA-Z0-9']/.test(c);
+                const isChineseJapanese = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]/.test(c);
+                const isSymbol = /[+\-.,!?;:/\\@#$%^&*()=<>{}[\]"'`|]+/.test(c);
+
+                if (isLetterOrDigit) {
+                    word += c;
+                } else {
+                    if (word) {
+                        tokens.push({text: word});
+                        word = '';
+                    }
+                    if (isChineseJapanese || isSymbol) {
+                        tokens.push({text: c});
+                    } else if (!/\s/.test(c)) {
+                        tokens.push({text: c}); // 其他字符也保留
+                    }
+                }
+            }
+
+            if (word) tokens.push({text: word});
+            return tokens;
+        },
+
+        /**
+         * 渲染对齐结果到指定容器
+         * @param {HTMLElement} container - 显示容器
+         * @param {string[]} lines1 - 上层文本行数组
+         * @param {string[]} lines2 - 下层文本行数组
+         */
+        renderAlignedPairs(container, lines1, lines2) {
+            container.innerHTML = '';
+            const maxLen = Math.max(lines1.length, lines2.length);
+
+            for (let i = 0; i < maxLen; i++) {
+                const line1 = (lines1[i] || '').trim();
+                const line2 = (lines2[i] || '').trim();
+
+                const tokens1 = this.tokenize(line1);
+                const tokens2 = this.tokenize(line2);
+
+                const row = document.createElement('div');
+                row.className = 'pair-row';
+                if (tokens1.length !== tokens2.length) {
+                    row.classList.add('mismatch');
+                }
+
+                const maxTokenLen = Math.max(tokens1.length, tokens2.length);
+                for (let j = 0; j < maxTokenLen; j++) {
+                    const t1 = tokens1[j] || {text: ''};
+                    const t2 = tokens2[j] || {text: ''};
+
+                    const pair = document.createElement('div');
+                    pair.className = 'pair';
+
+                    const top = document.createElement('span');
+                    top.className = 'top';
+                    top.textContent = t1.text;
+
+                    const bottom = document.createElement('span');
+                    bottom.className = 'bottom';
+                    bottom.textContent = t2.text;
+
+                    pair.appendChild(top);
+                    pair.appendChild(bottom);
+                    row.appendChild(pair);
+                }
+
+                container.appendChild(row);
+                if (i < maxLen - 1) {
+                    container.appendChild(document.createElement('br'));
+                }
+            }
+        },
+
+        /**
+         * 添加一组输入框（单行模式）
+         */
+        addGroup() {
+            const groupEl = document.createElement('div');
+            groupEl.className = 'group';
+
+            const label1 = document.createElement('span');
+            label1.textContent = TEXT.LABEL_ORIGINAL;
+            const ta1 = document.createElement('textarea');
+            const label2 = document.createElement('span');
+            label2.textContent = TEXT.LABEL_NEW;
+            const ta2 = document.createElement('textarea');
+            const align = document.createElement('div');
+            align.className = 'alignment';
+
+            groupEl.appendChild(label1);
+            groupEl.appendChild(ta1);
+            groupEl.appendChild(document.createElement('br'));
+            groupEl.appendChild(label2);
+            groupEl.appendChild(ta2);
+            groupEl.appendChild(document.createElement('br'));
+            groupEl.appendChild(align);
+
+            this.els.container.appendChild(groupEl);
+
+            // 绑定事件
+            const update = () => {
+                autoResizeTextarea(ta1);
+                autoResizeTextarea(ta2);
+                this.renderAlignment(groupEl, ta1, ta2);
+                this.saveData();
+            };
+
+            ta1.addEventListener('input', update);
+            ta2.addEventListener('input', update);
+
+            // 初始化高度
+            autoResizeTextarea(ta1);
+            autoResizeTextarea(ta2);
+
+            // 保存引用
+            const groupData = {el: groupEl, ta1, ta2};
+            this.groupsData.push(groupData);
+
+            // 初始渲染
+            update();
+            return groupData;
+        },
+
+        /**
+         * 渲染某组的对齐结果
+         */
+        renderAlignment(groupEl, ta1, ta2) {
+            const lines1 = ta1.value.split('\n');
+            const lines2 = ta2.value.split('\n');
+            const alignDiv = groupEl.querySelector('.alignment');
+            this.renderAlignedPairs(alignDiv, lines1, lines2);
+        },
+
+        /**
+         * 绑定多行模式事件
+         */
+        bindMultiEvents() {
+            const update = () => {
+                autoResizeTextarea(this.els.multiInput1);
+                autoResizeTextarea(this.els.multiInput2);
+                const lines1 = this.els.multiInput1.value.split('\n');
+                const lines2 = this.els.multiInput2.value.split('\n');
+                this.renderAlignedPairs(this.els.multiPreview, lines1, lines2);
+                this.saveData();
+            };
+
+            this.els.multiInput1.addEventListener('input', update);
+            this.els.multiInput2.addEventListener('input', update);
+
+            // 初始化高度
+            autoResizeTextarea(this.els.multiInput1);
+            autoResizeTextarea(this.els.multiInput2);
+        },
+
+        /**
+         * 切换模式
+         */
+        switchMode(mode) {
+            if (this.currentMode === mode) return;
+
+            if (mode === 'multi') {
+                // 单行 → 多行：合并所有组内容
+                const txt1 = this.groupsData.map(g => g.ta1.value.trim()).filter(Boolean).join('\n');
+                const txt2 = this.groupsData.map(g => g.ta2.value.trim()).filter(Boolean).join('\n');
+                this.els.multiInput1.value = txt1;
+                this.els.multiInput2.value = txt2;
+                this.renderAlignedPairs(this.els.multiPreview, txt1.split('\n'), txt2.split('\n'));
+            } else if (mode === 'single') {
+                // 多行 → 单行：拆分填入各组，不够则新增
+                const lines1 = this.els.multiInput1.value.split('\n');
+                const lines2 = this.els.multiInput2.value.split('\n');
+                const maxLen = Math.max(lines1.length, lines2.length);
+
+                // 新增不足的组
+                for (let i = 0; i < maxLen; i++) {
+                    if (i >= this.groupsData.length) {
+                        this.addGroup();
+                    }
+                    const g = this.groupsData[i];
+                    g.ta1.value = (lines1[i] || '').trim();
+                    g.ta2.value = (lines2[i] || '').trim();
+                    this.renderAlignment(g.el, g.ta1, g.ta2);
+                }
+                // 移除多余的组
+                while (this.groupsData.length > maxLen) {
+                    const g = this.groupsData.pop();
+                    g.el.remove();
+                }
+            }
+
+            // 更新 UI 显示
+            this.els.singleMode.style.display = mode === 'single' ? 'block' : 'none';
+            this.els.multiMode.style.display = mode === 'multi' ? 'block' : 'none';
+
+            // 更新 tab 样式
+            document.getElementById('tab-single').classList.toggle('active', mode === 'single');
+            document.getElementById('tab-multi').classList.toggle('active', mode === 'multi');
+
+            this.currentMode = mode;
+            this.saveData();
+        }
+    };
+
+    /**
+     * 自动调整 textarea 高度
+     */
+    function autoResizeTextarea(textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = (textarea.scrollHeight) + 'px';
+    }
+
+    // ========== 启动应用 ==========
+    window.addEventListener('DOMContentLoaded', () => App.init());
+</script>
+
+</body>
+</html>
