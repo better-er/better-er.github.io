@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MyGICA-fast 图片速览</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f7f7f7;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            padding: 32px 24px;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .controls {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 24px;
+            align-items: center;
+        }
+
+        .controls label {
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        select {
+            padding: 4px 12px;
+            font-size: 15px;
+            border-radius: 4px;
+            border: 1px solid #bbb;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-top: 24px;
+        }
+
+        .gallery.single-col {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+
+        .gallery-item {
+            background: #fafafa;
+            border-radius: 6px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+            cursor: pointer;
+            transition: box-shadow 0.2s;
+            border: 1px solid #eee;
+        }
+
+        .gallery-item:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .gallery.single-col {
+            background: #000;
+            padding: 0;
+            margin-left: 0;
+            margin-right: 0;
+        }
+
+        .gallery.single-col .gallery-item {
+            border-radius: 0;
+            border: none;
+            box-shadow: none;
+            background: #000;
+            margin-bottom: 0;
+            margin-left: 0;
+            margin-right: 0;
+        }
+
+        .gallery.single-col .gallery-item img {
+            width: 100vw;
+            max-width: 100vw;
+            min-width: 0;
+            height: auto;
+            max-height: none;
+            object-fit: contain;
+            background: #000;
+            display: block;
+            margin: 0;
+            padding: 0;
+        }
+
+        .img-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            background: #000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .img-modal.active {
+            display: flex;
+        }
+
+        .img-modal img {
+            max-width: 100vw;
+            max-height: 100vh;
+            border-radius: 0;
+            box-shadow: none;
+            background: #000;
+            display: block;
+        }
+
+        .img-modal .close {
+            position: absolute;
+            top: 32px;
+            right: 48px;
+            font-size: 36px;
+            color: #fff;
+            cursor: pointer;
+            font-weight: bold;
+            z-index: 10001;
+        }
+    </style>
+    <script defer data-domain="better-er.github.io" src="https://plausible.io/js/script.tagged-events.js"></script>
+    <!-- Cloudflare Web Analytics -->
+    <script defer src='https://static.cloudflareinsights.com/beacon.min.js'
+            data-cf-beacon='{"token": "c300376ee0b349878e2a8a1a395cc9b7"}'></script>
+    <!-- End Cloudflare Web Analytics -->
+</head>
+<body>
+<div class="container">
+    <h2>MyGICA-fast 图片速览</h2>
+    <div class="controls">
+        <label for="folderSelect">选择文件夹：</label>
+        <select id="folderSelect">
+            <option value="MyGO">MyGO</option>
+            <option value="Mujica">Mujica</option>
+            <option value="LycoReco">LycoReco</option>
+        </select>
+        <label for="modeSelect">展示方式：</label>
+        <select id="modeSelect">
+            <option value="all">全部（一次性下载，注意网络状态）</option>
+            <option value="thumb" selected>缩略图（点击加载和放大）</option>
+        </select>
+    </div>
+    <div class="gallery" id="gallery"></div>
+</div>
+<div class="img-modal" id="imgModal">
+    <span class="close" id="modalClose">&times;</span>
+    <img id="modalImg" src="" alt="预览"/>
+</div>
+<script>
+    // 维护图片路径映射
+    const imageMap = {
+        MyGO: [
+            'MyGICA-fast/MyGO/mygo_changes_01.jpg',
+            'MyGICA-fast/MyGO/mygo_changes_02.jpg',
+            'MyGICA-fast/MyGO/mygo_changes_03.jpg',
+            'MyGICA-fast/MyGO/mygo_changes_04.jpg',
+            'MyGICA-fast/MyGO/mygo_changes_05.jpg',
+            'MyGICA-fast/MyGO/mygo_changes_06.jpg',
+            'MyGICA-fast/MyGO/mygo_changes_07.jpg',
+            'MyGICA-fast/MyGO/mygo_changes_08.jpg',
+            'MyGICA-fast/MyGO/mygo_changes_09.jpg',
+            'MyGICA-fast/MyGO/mygo_changes_10.jpg',
+            'MyGICA-fast/MyGO/mygo_changes_11.jpg',
+            'MyGICA-fast/MyGO/mygo_changes_12.jpg',
+            'MyGICA-fast/MyGO/mygo_changes_13.jpg',
+        ],
+        Mujica: [
+            'MyGICA-fast/Mujica/mujica_changes_01.jpg',
+            'MyGICA-fast/Mujica/mujica_changes_02.jpg',
+            'MyGICA-fast/Mujica/mujica_changes_03.jpg',
+            'MyGICA-fast/Mujica/mujica_changes_04.jpg',
+            'MyGICA-fast/Mujica/mujica_changes_05.jpg',
+            'MyGICA-fast/Mujica/mujica_changes_06.jpg',
+            'MyGICA-fast/Mujica/mujica_changes_07.jpg',
+            'MyGICA-fast/Mujica/mujica_changes_08.jpg',
+            'MyGICA-fast/Mujica/mujica_changes_09.jpg',
+            'MyGICA-fast/Mujica/mujica_changes_10.jpg',
+            'MyGICA-fast/Mujica/mujica_changes_11.jpg',
+            'MyGICA-fast/Mujica/mujica_changes_12.jpg',
+            'MyGICA-fast/Mujica/mujica_changes_13.jpg',
+        ],
+        LycoReco: [
+            'MyGICA-fast/LycoReco/Lycoris Recoil_changes_01.jpg',
+            'MyGICA-fast/LycoReco/Lycoris Recoil_changes_02.jpg',
+            'MyGICA-fast/LycoReco/Lycoris Recoil_changes_03.jpg',
+            'MyGICA-fast/LycoReco/Lycoris Recoil_changes_04.jpg',
+            'MyGICA-fast/LycoReco/Lycoris Recoil_changes_05.jpg',
+            'MyGICA-fast/LycoReco/Lycoris Recoil_changes_06.jpg',
+            'MyGICA-fast/LycoReco/Lycoris Recoil_changes_07.jpg',
+            'MyGICA-fast/LycoReco/Lycoris Recoil_changes_08.jpg',
+            'MyGICA-fast/LycoReco/Lycoris Recoil_changes_09.jpg',
+            'MyGICA-fast/LycoReco/Lycoris Recoil_changes_10.jpg',
+            'MyGICA-fast/LycoReco/Lycoris Recoil_changes_11.jpg',
+            'MyGICA-fast/LycoReco/Lycoris Recoil_changes_12.jpg',
+            'MyGICA-fast/LycoReco/Lycoris Recoil_changes_13.jpg',
+        ]
+    };
+
+    const folderSelect = document.getElementById('folderSelect');
+    const modeSelect = document.getElementById('modeSelect');
+    const gallery = document.getElementById('gallery');
+    const imgModal = document.getElementById('imgModal');
+    const modalImg = document.getElementById('modalImg');
+    const modalClose = document.getElementById('modalClose');
+
+    function renderGallery() {
+        const folder = folderSelect.value;
+        const mode = modeSelect.value;
+        let images = imageMap[folder] || [];
+        gallery.innerHTML = '';
+        if (mode === 'all') {
+            gallery.classList.add('single-col');
+            gallery.style.width = '100vw';
+            gallery.style.maxWidth = '100vw';
+            gallery.style.marginLeft = 'calc(-1 * ((100vw - 100%) / 2))';
+            gallery.style.marginRight = '0';
+            images.forEach((src, idx) => {
+                const item = document.createElement('div');
+                item.className = 'gallery-item';
+                const num = document.createElement('div');
+                num.style.color = '#fff';
+                num.style.background = '#222';
+                num.style.fontSize = '20px';
+                num.style.textAlign = 'center';
+                num.style.padding = '8px 0 4px 0';
+                num.textContent = (idx + 1).toString();
+                item.appendChild(num);
+                const img = document.createElement('img');
+                img.src = src;
+                img.alt = src.split('/').pop();
+                img.style.cursor = 'default';
+                img.style.background = '#000';
+                item.appendChild(img);
+                gallery.appendChild(item);
+            });
+        } else {
+            gallery.classList.remove('single-col');
+            gallery.style.width = '';
+            gallery.style.maxWidth = '';
+            gallery.style.marginLeft = '';
+            gallery.style.marginRight = '';
+            images.forEach(src => {
+                const item = document.createElement('div');
+                item.className = 'gallery-item';
+                const img = document.createElement('img');
+                img.alt = src.split('/').pop();
+                img.setAttribute('data-src', src);
+                img.src = '';
+                img.style.background = '#eee';
+                img.style.filter = 'blur(8px)';
+                img.style.transition = 'filter 0.3s';
+                item.appendChild(img);
+                // 新增点击提示
+                const tip = document.createElement('div');
+                tip.textContent = '点击加载图片';
+                tip.style.position = 'absolute';
+                tip.style.top = '50%';
+                tip.style.left = '50%';
+                tip.style.transform = 'translate(-50%, -50%)';
+                tip.style.background = 'rgba(0,0,0,0.6)';
+                tip.style.color = '#fff';
+                tip.style.padding = '4px 12px';
+                tip.style.borderRadius = '4px';
+                tip.style.fontSize = '15px';
+                tip.style.pointerEvents = 'none';
+                tip.style.zIndex = '2';
+                tip.className = 'thumb-tip';
+                item.style.position = 'relative';
+                item.appendChild(tip);
+                let loaded = false;
+                item.onclick = () => {
+                    if (!loaded) {
+                        img.src = src;
+                        img.onload = () => {
+                            img.style.filter = 'none';
+                            img.style.background = '#fff';
+                            tip.style.display = 'none';
+                        };
+                        loaded = true;
+                    } else {
+                        modalImg.src = src;
+                        imgModal.classList.add('active');
+                    }
+                };
+                gallery.appendChild(item);
+            });
+        }
+    }
+
+    folderSelect.onchange = renderGallery;
+    modeSelect.onchange = renderGallery;
+
+    modalClose.onclick = function () {
+        imgModal.classList.remove('active');
+        modalImg.src = '';
+    };
+    imgModal.onclick = function (e) {
+        if (e.target === imgModal) {
+            imgModal.classList.remove('active');
+            modalImg.src = '';
+        }
+    };
+
+    // 初始化
+    renderGallery();
+</script>
+</body>
+</html>
