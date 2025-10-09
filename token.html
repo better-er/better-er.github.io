@@ -38,7 +38,9 @@
             min-height: 24px;
             resize: vertical;
             box-sizing: border-box;
-            /* height: 60px;  // 移除默认高度，改为 min-height */
+            /* 限制最大高度为半屏 */
+            max-height: 50vh;
+            overflow-y: auto;
         }
 
         /* 单行模式布局 */
@@ -113,10 +115,14 @@
         .multi-container {
             display: flex;
             gap: 20px;
+            align-items: flex-start; /* 让输入框顶部对齐，不被下方内容挤压 */
+            /* max-height: 50vh;  移除此限制 */
         }
 
         .multi-box {
             flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         .multi-box h3 {
