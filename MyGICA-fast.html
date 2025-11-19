@@ -1,103 +1,120 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <title>MyGICA-fast 图片速览</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: #f7f7f7;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f8f9fa;
             margin: 0;
             padding: 0;
+            color: #333;
         }
 
         .container {
             max-width: 1000px;
-            margin: 40px auto;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            padding: 32px 24px;
+            margin: 60px auto;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+            padding: 40px 32px;
         }
 
         h2 {
-            margin-top: 0;
-            color: #333;
+            margin: 0 0 24px 0;
+            color: #222;
+            font-weight: 600;
+            font-size: 28px;
+            text-align: center;
         }
 
         .controls {
             display: flex;
-            gap: 24px;
-            margin-bottom: 24px;
+            justify-content: center;
+            gap: 32px;
+            margin-bottom: 36px;
+            flex-wrap: wrap;
             align-items: center;
         }
 
         .controls label {
-            font-weight: bold;
-            margin-right: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            color: #555;
+            white-space: nowrap;
         }
 
         select {
-            padding: 4px 12px;
-            font-size: 15px;
-            border-radius: 4px;
-            border: 1px solid #bbb;
+            padding: 8px 16px;
+            font-size: 16px;
+            border-radius: 12px;
+            border: 1px solid #e1e5e9;
+            background: #fff;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #4c9eff;
+            box-shadow: 0 0 0 2px rgba(76, 158, 255, 0.25);
         }
 
         .gallery {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 18px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
             margin-top: 24px;
         }
 
         .gallery.single-col {
             grid-template-columns: 1fr;
             gap: 0;
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            position: relative;
         }
 
         .gallery-item {
             background: #fafafa;
-            border-radius: 6px;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
             overflow: hidden;
             cursor: pointer;
-            transition: box-shadow 0.2s;
-            border: 1px solid #eee;
+            transition: all 0.3s ease;
+            border: 1px solid #f0f0f0;
+            position: relative;
         }
 
         .gallery-item:hover {
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
         }
 
         .gallery-item img {
             width: 100%;
-            height: 180px;
+            height: 200px;
             object-fit: cover;
             display: block;
+            transition: all 0.4s ease;
         }
 
-        .gallery.single-col {
-            background: #000;
-            padding: 0;
-            margin-left: 0;
-            margin-right: 0;
-        }
-
+        /* 单列模式：全屏图片 */
         .gallery.single-col .gallery-item {
             border-radius: 0;
             border: none;
             box-shadow: none;
             background: #000;
-            margin-bottom: 0;
-            margin-left: 0;
-            margin-right: 0;
+            margin: 0;
+            padding: 0;
         }
 
         .gallery.single-col .gallery-item img {
             width: 100vw;
             max-width: 100vw;
-            min-width: 0;
             height: auto;
             max-height: none;
             object-fit: contain;
@@ -105,19 +122,54 @@
             display: block;
             margin: 0;
             padding: 0;
+            min-height: 100vh;
         }
 
+        /* 图片编号标签（单列模式） */
+        .gallery.single-col .gallery-item .img-number {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 20px;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        /* 缩略图加载提示 */
+        .gallery-item .thumb-tip {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 16px;
+            text-align: center;
+            pointer-events: none;
+            opacity: 0.9;
+            transition: opacity 0.3s;
+        }
+
+        /* 模态窗：全屏预览 */
         .img-modal {
             display: none;
             position: fixed;
             z-index: 9999;
-            left: 0;
-            top: 0;
-            right: 0;
-            bottom: 0;
+            inset: 0;
             background: #000;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
+            padding: 0;
+            margin: 0;
         }
 
         .img-modal.active {
@@ -127,34 +179,76 @@
         .img-modal img {
             max-width: 100vw;
             max-height: 100vh;
-            border-radius: 0;
-            box-shadow: none;
+            object-fit: contain;
             background: #000;
             display: block;
+            margin: 0 auto;
+            box-shadow: none;
+            border-radius: 0;
+            pointer-events: none;
         }
 
         .img-modal .close {
             position: absolute;
-            top: 32px;
-            right: 48px;
-            font-size: 36px;
+            top: 24px;
+            right: 32px;
+            font-size: 40px;
             color: #fff;
             cursor: pointer;
             font-weight: bold;
             z-index: 10001;
+            text-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
+            transition: all 0.2s;
+        }
+
+        .img-modal .close:hover {
+            color: #ff6b6b;
+            transform: scale(1.1);
+        }
+
+        /* 响应式优化：小屏适应 */
+        @media (max-width: 768px) {
+            .container {
+                margin: 40px 16px;
+                padding: 28px 20px;
+            }
+
+            .controls {
+                gap: 20px;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            select {
+                width: 100%;
+            }
+
+            .gallery.single-col .gallery-item img {
+                height: auto;
+                min-height: 0;
+            }
+
+            .img-modal .close {
+                top: 16px;
+                right: 16px;
+                font-size: 32px;
+            }
+        }
+
+        .mygo {
+            color: #3388BB;
+        }
+
+        .mujica {
+            color: #881144;
         }
     </style>
-    <script defer data-domain="better-er.github.io" src="https://plausible.io/js/script.tagged-events.js"></script>
-    <!-- Cloudflare Web Analytics -->
-    <script defer src='https://static.cloudflareinsights.com/beacon.min.js'
-            data-cf-beacon='{"token": "c300376ee0b349878e2a8a1a395cc9b7"}'></script>
-    <!-- End Cloudflare Web Analytics -->
 </head>
 <body>
 <div class="container">
-    <h2>MyGICA-fast 图片速览</h2>
+    <h2><span class="mygo">MyG</span><span class="mujica">ICA</span>-fast 图片速览</h2>
     <div class="controls">
-        <label for="folderSelect">选择文件夹：</label>
+        <label for="folderSelect">选择作品：</label>
         <select id="folderSelect">
             <option value="MyGO">MyGO</option>
             <option value="Mujica">Mujica</option>
@@ -162,8 +256,8 @@
         </select>
         <label for="modeSelect">展示方式：</label>
         <select id="modeSelect">
-            <option value="all">全部（一次性下载，注意网络状态）</option>
-            <option value="thumb" selected>缩略图（点击加载和放大）</option>
+            <option value="all">全部（一次性加载）</option>
+            <option value="thumb" selected>缩略图（点加载+放大）</option>
         </select>
     </div>
     <div class="gallery" id="gallery"></div>
@@ -172,8 +266,8 @@
     <span class="close" id="modalClose">&times;</span>
     <img id="modalImg" src="" alt="预览"/>
 </div>
+
 <script>
-    // 维护图片路径映射
     const imageMap = {
         MyGO: [
             'MyGICA-fast/MyGO/mygo_changes_01.jpg',
@@ -232,82 +326,73 @@
     function renderGallery() {
         const folder = folderSelect.value;
         const mode = modeSelect.value;
-        let images = imageMap[folder] || [];
+        const images = imageMap[folder] || [];
+
         gallery.innerHTML = '';
+        gallery.classList.toggle('single-col', mode === 'all');
+
         if (mode === 'all') {
-            gallery.classList.add('single-col');
             gallery.style.width = '100vw';
-            gallery.style.maxWidth = '100vw';
             gallery.style.marginLeft = 'calc(-1 * ((100vw - 100%) / 2))';
             gallery.style.marginRight = '0';
+
             images.forEach((src, idx) => {
                 const item = document.createElement('div');
                 item.className = 'gallery-item';
+
+                // 添加编号标签
                 const num = document.createElement('div');
-                num.style.color = '#fff';
-                num.style.background = '#222';
-                num.style.fontSize = '20px';
-                num.style.textAlign = 'center';
-                num.style.padding = '8px 0 4px 0';
+                num.className = 'img-number';
                 num.textContent = (idx + 1).toString();
                 item.appendChild(num);
+
                 const img = document.createElement('img');
                 img.src = src;
                 img.alt = src.split('/').pop();
-                img.style.cursor = 'default';
-                img.style.background = '#000';
                 item.appendChild(img);
                 gallery.appendChild(item);
             });
         } else {
-            gallery.classList.remove('single-col');
             gallery.style.width = '';
-            gallery.style.maxWidth = '';
             gallery.style.marginLeft = '';
             gallery.style.marginRight = '';
+
             images.forEach(src => {
                 const item = document.createElement('div');
                 item.className = 'gallery-item';
+
                 const img = document.createElement('img');
                 img.alt = src.split('/').pop();
                 img.setAttribute('data-src', src);
                 img.src = '';
-                img.style.background = '#eee';
                 img.style.filter = 'blur(8px)';
-                img.style.transition = 'filter 0.3s';
-                item.appendChild(img);
-                // 新增点击提示
+                img.style.background = '#f5f5f5';
+                img.style.transition = 'all 0.4s ease';
+
                 const tip = document.createElement('div');
-                tip.textContent = '点击加载图片';
-                tip.style.position = 'absolute';
-                tip.style.top = '50%';
-                tip.style.left = '50%';
-                tip.style.transform = 'translate(-50%, -50%)';
-                tip.style.background = 'rgba(0,0,0,0.6)';
-                tip.style.color = '#fff';
-                tip.style.padding = '4px 12px';
-                tip.style.borderRadius = '4px';
-                tip.style.fontSize = '15px';
-                tip.style.pointerEvents = 'none';
-                tip.style.zIndex = '2';
                 tip.className = 'thumb-tip';
+                tip.textContent = '点击加载图片';
                 item.style.position = 'relative';
+                item.appendChild(img);
                 item.appendChild(tip);
+
                 let loaded = false;
                 item.onclick = () => {
                     if (!loaded) {
                         img.src = src;
                         img.onload = () => {
                             img.style.filter = 'none';
-                            img.style.background = '#fff';
-                            tip.style.display = 'none';
+                            img.style.background = 'transparent';
+                            tip.style.opacity = '0';
+                            setTimeout(() => tip.remove(), 300);
+                            loaded = true;
                         };
-                        loaded = true;
                     } else {
                         modalImg.src = src;
                         imgModal.classList.add('active');
                     }
                 };
+
                 gallery.appendChild(item);
             });
         }
@@ -316,11 +401,12 @@
     folderSelect.onchange = renderGallery;
     modeSelect.onchange = renderGallery;
 
-    modalClose.onclick = function () {
+    modalClose.onclick = () => {
         imgModal.classList.remove('active');
         modalImg.src = '';
     };
-    imgModal.onclick = function (e) {
+
+    imgModal.onclick = (e) => {
         if (e.target === imgModal) {
             imgModal.classList.remove('active');
             modalImg.src = '';
