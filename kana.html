@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8"/>
+    <title id="page-title"></title>
+    <style>
+        :root {
+            --bg-primary: #f8f9fa;
+            --bg-secondary: #ffffff;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --border-light: #dee2e6;
+            --accent: #4a6fa5;
+            --alert: #f8d7da;
+            --alert-border: #dc3545;
+            --hover-overlay: rgba(0, 0, 0, 0.03);
+        }
+
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            margin: 20px;
+            color: var(--text-primary);
+            background-color: var(--bg-primary);
+            line-height: 1.4;
+            font-size: 0.9rem;
+        }
+
+        h2 {
+            color: var(--text-primary);
+            font-weight: 500;
+            margin-bottom: 16px;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 6px;
+            display: inline-block;
+            font-size: 1.6rem;
+        }
+
+        textarea {
+            font-family: 'Consolas', 'Menlo', 'Monaco', monospace;
+            width: 100%;
+            min-height: 120px;
+            padding: 12px;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            resize: vertical;
+            box-sizing: border-box;
+            max-height: 40vh;
+            overflow-y: auto;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin-bottom: 16px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(74, 111, 165, 0.2);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .box {
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04);
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .box h3 {
+            margin-top: 0;
+            color: var(--accent);
+            font-size: 1rem;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-light);
+            font-weight: 600;
+        }
+
+        .button-group {
+            margin: 16px 0;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        button {
+            padding: 8px 16px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #3a5a80;
+        }
+
+        .result-container {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 16px;
+            font-family: 'Consolas', 'Menlo', 'Monaco', monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04);
+            margin-top: 16px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 300px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        /* 添加复制按钮到结果区域右上角 */
+        .result-container .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .result-container .copy-btn:hover {
+            background: #3a5a80;
+        }
+
+        p.small {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin: 12px 0;
+            line-height: 1.7;
+        }
+
+        /* 操作指南：柔和提示，非警告色 */
+        .guide-panel {
+            margin-bottom: 16px;
+            padding: 12px;
+            background-color: #f1f5f9;
+            border-left: 3px solid #6c757d;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .guide-panel h4 {
+            margin: 0 0 8px 0;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .guide-panel ol {
+            margin: 8px 0 8px 20px;
+            padding-left: 0;
+        }
+
+        .guide-panel li {
+            margin-bottom: 4px;
+        }
+
+        .guide-panel code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+
+        ::-webkit-scrollbar {
+            width: 7px;
+            height: 7px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-light);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--border-light);
+        }
+
+        /* 小屏幕适配 */
+        @media (max-width: 768px) {
+            body {
+                margin: 12px;
+                font-size: 0.9rem;
+            }
+            .box {
+                padding: 12px;
+            }
+            .button-group {
+                flex-direction: column;
+            }
+            button {
+                width: 100%;
+            }
+        }
+
+        /* 新增：按钮加载 spinner */
+        .btn-spinner {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .spinner {
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255,255,255,0.25);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2 id="main-title"></h2>
+
+    <p class="small" id="desc">
+        对齐工具支持格式：<br>
+        1. 全假名文本<br>
+        2. 空格分隔的罗马音<br>
+        3. 「一字一音」的汉字与假名混合，保持可读性<br>
+        前两者可简单地通过大模型生成，第三种格式需要额外借助本工具转换生成。<br>
+        注意：大模型可能会犯错，请相信自己的耳朵。<br><br>
+        工具说明：<br>
+        - 接收大模型容易生成的 [漢]{かん} 注音标注格式文本输入<br>
+        - 将 [漢]{かん} 形式自动转为「一字一音」的的汉字与假名混合，兼顾音节对应与可读性<br>
+    </p>
+
+    <div class="box">
+        <h3>输入待转换的文本（此步骤推荐使用大模型预处理）</h3>
+
+        <!-- 操作指南：明确区分提示与输入 -->
+        <div class="guide-panel">
+            <h4>大模型提示词参考</h4>
+            <p>只保留日语文本，将汉字转换为注音标注格式，要求全部使用 [汉字]{注音} 的成对形式。处理规则如下：</p>
+            <ol>
+                <li>所有音读汉字必须拆分为单字并分别标注；</li>
+                <li>非整体训读的汉字也应拆分为单字单独标注；</li>
+                <li>片假名保留原样，不作任何处理；</li>
+                <li>确保每个汉字都包裹在 <code>[]</code> 中，对应注音包裹在 <code>{}</code> 内。</li>
+            </ol>
+            <p><strong>示例转换：</strong><br>
+            - 输入：<code>君が持ってきた漫画</code><br>
+            &nbsp;&nbsp;输出：<code>[君]{きみ}が[持]{も}てきた[漫]{まん}[画]{が}</code><br>
+            - 输入：<code>くれた知らない名前のお花</code><br>
+            &nbsp;&nbsp;输出：<code>くれた[知]{し}らない[名]{な}[前]{まえ}のお[花]{はな}</code>
+            </p>
+        </div>
+
+        <textarea id="input-ruby" placeholder="请在此粘贴日语文本（如：君が持ってきた漫画）"></textarea>
+        <div class="button-group">
+            <button id="btn-convert">转换为一字一音</button>
+            <button id="btn-clear">清空</button>
+        </div>
+    </div>
+
+    <div class="box">
+        <h3>输出：一字一音排版结果</h3>
+        <div id="output-result" class="result-container">
+            <button class="copy-btn" id="btn-copy">复制</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    /**
+     * ===================================================
+     * 常量：所有显示文本
+     * ===================================================
+     */
+    const TEXT = {
+        PAGE_TITLE: '日语歌词排版「一字一音」格式',
+        MAIN_TITLE: '日语歌词排版「一字一音」格式',
+        DEFAULT_INPUT: `[君]{きみ}が[持]{も}ってきた[漫]{まん}[画]{が}
+
+[くれ]た[知]{し}らない[名]{な}[前]{まえ}のお[花]{はな}
+
+[今日]{きょう}はまだ[来]{こ}ないかな？
+
+[初]{はじ}めての[感]{かん}[情]{じょう}[知]{し}ってしまった
+
+[窓]{まど}に[飾]{かざ}った[絵]{え}[画]{が}をなぞってひとりで[宇]{う}[宙]{ちゅう}を[旅]{たび}して
+
+それだけでいいはずだったのに
+
+[君]{きみ}の[手]{て}を[握]{にぎ}ってしまったら
+
+[孤]{こ}[独]{どく}を[知]{し}らないこの[街]{まち}には
+
+もう[二]{に}[度]{ど}と[帰]{かえ}ってくることはできないのでしょう
+
+[君]{きみ}が[手]{て}を[差]{さ}し[伸]{の}べた　[光]{ひかり}で[影]{かげ}が[生]{う}まれる
+
+[歌]{うた}って[聞]{き}かせて　この[話]{はなし}の[続]{つづ}き
+
+[連]{つ}れて[行]{い}って[見]{み}たことない[星]{ほし}まで
+
+[誰]{だれ}の[手]{て}も[声]{こえ}も[届]{とど}かない
+
+[高]{たか}く[聳]{そび}え[立]{た}った[塔]{とう}の[上]{うえ}へ
+
+[飛]{と}ばす[フウセンカズラ]
+
+[僕]{ぼく}は[君]{きみ}に[笑]{わら}って[欲]{ほ}しいんだ
+
+[満]{み}たされない[穴]{あな}は[惰]{だ}[性]{せい}の[会]{かい}[話]{わ}や[澄]{す}ました[ポーズ]で
+
+これまでは[埋]{う}めてきたけど
+
+[退]{たい}[屈]{くつ}な[日]{ひ}[々]{び}を[蹴散]{けち}らして
+
+[君]{きみ}と[二]{ふた}[人]{り}でこの[街]{まち}[中]{じゅう}を[泳]{およ}げたら
+
+それはどれだけ[素]{す}[職]{てき}なことでしょう？
+
+[出]{だ}したことないほど[大]{おお}きな[声]{こえ}でやっと[君]{きみ}に[伝]{つた}わる
+
+[歪]{いびつ}なくらいがさ　きっとちょうどいいね
+
+[世]{せ}[界]{かい}の[端]{はじ}と[端]{はじ}を[結]{むす}んで
+
+[窓]{まど}に[飾]{かざ}った[絵]{え}[画]{が}をなぞってひとりで[宇]{う}[宙]{ちゅう}を[旅]{たび}して
+
+それだけでも[不]{ふ}[自]{じ}[由]{ゆう}ないけど
+
+[僕]{ぼく}は[選]{えら}んでみたいの
+
+[高]{たか}[鳴]{な}る[心]{こころ}　[謎]{なぞ}だらけの[空]{そら}を
+
+[安]{あん}[全]{ぜん}な[ループ]を[今]{いま}、[書]{か}き[換]{か}えて！
+
+[君]{きみ}の[手]{て}を[握]{にぎ}ってしまったら
+
+[孤]{こ}[独]{どく}を[知]{し}らないこの[街]{まち}には
+
+もう[二]{に}[度]{ど}と[帰]{かえ}ってくることはできないのでしょう
+
+いくらでも[迷]{まよ}いながら[光]{ひかり}も[影]{かげ}も[見]{み}に[行]{い}こう
+
+[歌]{うた}って[聞]{き}かせてこの[話]{はなし}の[続]{つづ}き
+
+[連]{つ}れて[行]{い}って[見]{み}たことない[星]{ほし}まで
+
+[世]{せ}[界]{かい}の[端]{はじ}と[端]{はじ}を[結]{むす}んで`
+    };
+
+    /**
+     * ===================================================
+     * App 主逻辑
+     * ===================================================
+     */
+    const STORAGE_KEY = 'ruby_tool_data';
+
+    const App = {
+        els: {
+            mainTitle: document.getElementById('main-title'),
+            inputRuby: document.getElementById('input-ruby'),
+            outputResult: document.getElementById('output-result'),
+            btnConvert: document.getElementById('btn-convert'),
+            btnClear: document.getElementById('btn-clear'),
+            btnCopy: document.getElementById('btn-copy'),
+            desc: document.getElementById('desc')
+        },
+
+        // 新增：自动转换节流与状态
+        AUTO_CONVERT_DEBOUNCE_MS: 600,
+        _autoConvertTimer: null,
+        _isConverting: false,
+        _originalConvertHTML: null,
+
+        /**
+         * 初始化应用
+         */
+        init() {
+            this.setupText();
+            // 记录初始按钮 HTML 文本（用于恢复）
+            this._originalConvertHTML = this.els.btnConvert.innerHTML;
+            this.loadData();
+            this.bindEvents();
+        },
+
+        setupText() {
+            document.title = TEXT.PAGE_TITLE;
+            document.getElementById('page-title').textContent = TEXT.PAGE_TITLE;
+            this.els.mainTitle.textContent = TEXT.MAIN_TITLE;
+            this.els.inputRuby.value = TEXT.DEFAULT_INPUT;
+        },
+
+        /**
+         * 保存输入数据
+         */
+        saveData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                input: this.els.inputRuby.value
+            }));
+        },
+
+        /**
+         * 加载保存的数据
+         */
+        loadData() {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return;
+            try {
+                const data = JSON.parse(raw);
+                if (data.input) {
+                    this.els.inputRuby.value = data.input;
+                }
+            } catch (e) {}
+        },
+
+        /**
+         * 小假名集合（平假名 + 片假名小写）
+         */
+        SMALL_KANA: new Set('ゃゅょっゎァィゥェォャュョッヮ'),
+
+        /**
+         * 将假名字符串分割为音节列表，小假名附属于前一个音节
+         */
+        splitIntoSyllables(kana) {
+            if (!kana) return [];
+            const syllables = [];
+            for (let i = 0; i < kana.length; i++) {
+                const c = kana[i];
+                // 小假名：合并到前一个音节
+                if (this.SMALL_KANA.has(c) && syllables.length > 0) {
+                    syllables[syllables.length - 1] += c;
+                } else {
+                    syllables.push(c);
+                }
+            }
+            return syllables;
+        },
+
+        /**
+         * 将 Ruby 标注文本转换为单字符音节序列，并清理残余括号与空行
+         */
+        rubyToOneCharPerSyllable(text) {
+            if (!text) return '';
+
+            // 第一步：处理 [汉字]{注音} 格式
+            const pattern = /\[([^\]]+)]\{([^}]+)}/g;
+            let result = text.replace(pattern, (match, kanji, kana) => {
+                const syllables = this.splitIntoSyllables(kana);
+                const m = syllables.length;  // 音节数
+                const n = kanji.length;    // 汉字数
+                const resultChars = [];
+
+                for (let i = 0; i < m; i++) {
+                    if (i < n) {
+                        resultChars.push(kanji[i]); // 用汉字
+                    } else {
+                        resultChars.push(syllables[i]); // 补音节
+                    }
+                }
+
+                return resultChars.join('');
+            });
+
+            // 第二步：删除所有残留的 [ ] { }（防用户误输入或模型输出混乱）
+            result = result.replace(/[\[\]{}]/g, '');
+
+            // 第三步：删除空行（保留非空行的换行结构）
+            result = result
+                .split(/\r?\n/)                    // 按行分割
+                .filter(line => line.trim() !== '') // 过滤掉空白行
+                .join('\n');                       // 重新连接为无空行的文本
+
+            return result;
+        },
+
+        /**
+         * 清空所有输入
+         */
+        clear() {
+            this.els.inputRuby.value = '';
+            // 保持输出区域有 copy 按钮，并更新引用和事件
+            this.els.outputResult.innerHTML = '<button class="copy-btn" id="btn-copy">复制</button>';
+            this._updateCopyButtonRef();
+            this.saveData();
+        },
+
+        /**
+         * 执行转换并输出
+         */
+        convert() {
+            // 如果当前正在转换，忽略重复调用
+            if (this._isConverting) return;
+            this._isConverting = true;
+
+            // 显示按钮 loading 状态
+            this._setConvertLoading(true);
+
+            // 执行同步转换逻辑
+            const input = this.els.inputRuby.value;
+            const result = this.rubyToOneCharPerSyllable(input);
+
+            // 更新输出区域（包含新的 copy 按钮）
+            this.els.outputResult.innerHTML = `<button class="copy-btn" id="btn-copy">复制</button>${result}`;
+            // 更新 copy 按钮引用与事件
+            this._updateCopyButtonRef();
+
+            // 转换结束：显示成功文案 1 秒钟，然后还原按钮文本
+            this._setConvertLoading(false);
+            this._setConvertSuccessTemporarily();
+
+            this.saveData();
+            this._isConverting = false;
+        },
+
+        /**
+         * 复制结果到剪贴板
+         */
+        copyResult() {
+            const resultText = this.els.outputResult.textContent.replace('复制', '').trim();
+            navigator.clipboard.writeText(resultText).then(() => {
+                const btn = this.els.btnCopy;
+                const originalText = btn.textContent;
+                btn.textContent = '已复制';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 1500);
+            }).catch(() => {
+                alert('复制失败，请手动选择文本复制');
+            });
+        },
+
+        /**
+         * 设置或取消转换按钮 loading 状态（在原有按钮内部添加 spinner）
+         */
+        _setConvertLoading(show) {
+            if (!this.els.btnConvert) return;
+            if (show) {
+                this.els.btnConvert.innerHTML = `<span class="btn-spinner"><span class="spinner"></span><span>转换为一字一音中</span></span>`;
+                this.els.btnConvert.disabled = true;
+            } else {
+                // 恢复为原始文本（暂不恢复成功提示，这里只是取消 loading）
+                this.els.btnConvert.innerHTML = this._originalConvertHTML || '转换为一字一音';
+                this.els.btnConvert.disabled = false;
+            }
+        },
+
+        /**
+         * 显示成功文本 1 秒后恢复为原始按钮文案
+         */
+        _setConvertSuccessTemporarily() {
+            if (!this.els.btnConvert) return;
+            const orig = this._originalConvertHTML || '转换为一字一音';
+            this.els.btnConvert.textContent = '已转换为一字一音';
+            setTimeout(() => {
+                this.els.btnConvert.innerHTML = orig;
+            }, 1000);
+        },
+
+        /**
+         * 更新 copy 按钮引用并绑定事件
+         */
+        _updateCopyButtonRef() {
+            const newBtn = document.getElementById('btn-copy');
+            if (newBtn) {
+                this.els.btnCopy = newBtn;
+                // 先移除旧的处理（如果存在），再绑定新的
+                try { this.els.btnCopy.removeEventListener && this.els.btnCopy.removeEventListener('click', this.copyResult); } catch (e) {}
+                this.els.btnCopy.addEventListener('click', () => this.copyResult());
+            }
+        },
+
+        /**
+         * 绑定事件
+         */
+        bindEvents() {
+            this.els.btnConvert.addEventListener('click', () => this.convert());
+            this.els.btnClear.addEventListener('click', () => this.clear());
+
+            // 当输入变化时：保存并触发去抖的自动转换
+            this.els.inputRuby.addEventListener('input', () => {
+                this.saveData();
+                // 清除已有定时器
+                if (this._autoConvertTimer) clearTimeout(this._autoConvertTimer);
+                // 重新设定去抖定时器，定时器触发时执行转换（并展示 loading）
+                this._autoConvertTimer = setTimeout(() => {
+                    this.convert();
+                    this._autoConvertTimer = null;
+                }, this.AUTO_CONVERT_DEBOUNCE_MS);
+            });
+
+            // 初始渲染
+            this.convert();
+        }
+    };
+
+    // ========== 启动应用 ==========
+    window.addEventListener('DOMContentLoaded', () => App.init());
+</script>
+</body>
+</html>

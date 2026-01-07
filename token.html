@@ -203,6 +203,39 @@
             line-height: 1.7;
         }
 
+        /* 指向 kana.html 的小引导条 */
+        .goto-kana {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(90deg, rgba(74,111,165,0.06), transparent);
+            border: 1px dashed var(--border-light);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.86rem;
+            margin-bottom: 12px;
+        }
+        .goto-kana a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .goto-kana a:hover { text-decoration: underline; }
+
+        /* 无障碍隐藏文本（屏幕阅读器可见，视觉上隐藏） */
+        .visually-hidden {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0 0 0 0) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+
         /* 滚动条优化 */
         ::-webkit-scrollbar {
             width: 7px;
@@ -244,13 +277,21 @@
 <div id="multi-mode">
     <p class="small" id="multi-desc"></p>
 
+    <!-- 引导用户到 kana.html 的链接 -->
+    <div class="goto-kana" role="note" aria-label="假名工具">
+        <span>日语歌词预处理</span>
+        <a href="kana.html" target="_blank" rel="noopener">假名工具</a>
+    </div>
+
     <div class="multi-container">
         <div class="multi-box">
             <h3 id="label-original"></h3>
+            <label for="multi-input1" class="visually-hidden">原词输入</label>
             <textarea id="multi-input1"></textarea>
         </div>
         <div class="multi-box">
             <h3 id="label-new"></h3>
+            <label for="multi-input2" class="visually-hidden">新词输入</label>
             <textarea id="multi-input2"></textarea>
         </div>
     </div>
