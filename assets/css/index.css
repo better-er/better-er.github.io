@@ -1,0 +1,84 @@
+body {
+    font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    max-width: 480px;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.06);
+    padding: 48px 32px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+h2 {
+    margin: 0 0 16px;
+    color: #2c3e50;
+    font-weight: 600;
+    font-size: 28px;
+    letter-spacing: -0.5px;
+}
+
+.desc {
+    color: #7f8c8d;
+    margin-bottom: 32px;
+    font-size: 17px;
+    font-style: italic;
+    font-weight: 500;
+    letter-spacing: 1px;
+}
+
+.link-group {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+a {
+    display: block;
+    padding: 16px 24px;
+    background: #3498db;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 12px;
+    font-size: 17px;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
+}
+
+a:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+}
+
+a:active {
+    transform: translateY(0);
+}
+
+/* 处理移动端点击反馈 */
+a::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: rgba(255, 255, 255, 0.1);
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+}
+
+a:active::before {
+    opacity: 1;
+}
