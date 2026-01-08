@@ -172,11 +172,25 @@ function queryByFinals() {
         return;
     }
 
-    // 每行最多20字
+    // 每行最多20字 -> 但我们需要为每个字符生成带 class 的 span
     const lines = [];
     for (let i = 0; i < resultChars.length; i += 20) {
-        const line = resultChars.slice(i, i + 20).map(item => item[0]).join(' ');
-        lines.push(line);
+        const segment = resultChars.slice(i, i + 20);
+        const charsHtml = segment.map(item => {
+            const ch = item[0];
+            // 判断是否为多音字：charToPinyinDict 中存在且拼音数量 > 1
+            const pList = charToPinyinDict[ch];
+            const isMulti = Array.isArray(pList) && pList.length > 1;
+            if (isMulti) {
+                // 把拼音列表作为 title，用逗号分隔
+                const title = pList.join(', ');
+                return `<span class="char multi-char" title="多音字: ${title}">${ch}</span>`;
+            } else {
+                return `<span class="char">${ch}</span>`;
+            }
+        }).join('');
+
+        lines.push(charsHtml);
     }
 
     resultDiv.innerHTML = lines.map(line => `<p>${line}</p>`).join('');

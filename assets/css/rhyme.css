@@ -268,3 +268,25 @@ button.control-btn.active {
     font-weight: 600;
     font-size: 13px;
 }
+
+.result .char {
+    display: inline-block;
+    padding: 0 6px;
+    margin: 2px 1px;
+    min-width: 18px;
+    text-align: center;
+    border-radius: 4px;
+}
+
+.result .char.multi-char {
+    color: #e67e22;
+    font-weight: 700;
+    border-bottom: 2px dotted rgba(230, 126, 34, 0.6);
+    background-color: rgba(230, 126, 34, 0.04);
+    cursor: help;
+}
+
+.result .char:hover {
+    transform: translateY(-2px);
+    transition: transform 0.12s ease;
+}
