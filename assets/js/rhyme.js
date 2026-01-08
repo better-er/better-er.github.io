@@ -87,6 +87,10 @@ let selectedFinals = new Set();
 let pinyinDict = {};        // 韵母 -> [ [字, 频率], ... ]
 let charToPinyinDict = {};  // 汉字 -> [拼音列表]，用于识别多音字
 
+// 新增：常用字过滤相关
+let onlyShowCommon = true;              // 默认启用“只显示常用字”
+let commonChars = new Set();            // 从 assets/txt/常用字和次常用字.txt 加载
+
 // 切换单选/多选
 document.getElementById('mode-btn').addEventListener('click', function () {
     isMultiSelect = !isMultiSelect;
@@ -97,6 +101,19 @@ document.getElementById('mode-btn').addEventListener('click', function () {
         updateSelectedDisplay();
     }
 });
+
+// 新增：只显示常用字 按钮处理
+const commonBtn = document.getElementById('common-btn');
+if (commonBtn) {
+    // 初始状态与 onlyShowCommon 保持一致（HTML 中默认添加了 active）
+    commonBtn.addEventListener('click', function () {
+        onlyShowCommon = !onlyShowCommon;
+        this.classList.toggle('active');
+        // 切换后重新查询并重新运行冗余校验
+        queryByFinals();
+        runRedundancyCheck();
+    });
+}
 
 // 清除选择
 document.getElementById('clear-btn').addEventListener('click', function () {
@@ -134,7 +151,12 @@ function queryByFinals() {
     for (const [pinyin, charList] of Object.entries(pinyinDict)) {
         for (const targetFinal of selectedFinals) {
             if (check(pinyin, targetFinal)) {
-                resultChars.push(...charList);
+                // charList 是 [[字, 频率], ...]
+                for (const item of charList) {
+                    const ch = item[0];
+                    if (onlyShowCommon && commonChars.size > 0 && !commonChars.has(ch)) continue;
+                    resultChars.push(item);
+                }
                 break;
             }
         }
@@ -181,8 +203,12 @@ function checkFinalHasCharacters() {
 
         for (const [pinyin, charList] of Object.entries(pinyinDict)) {
             if (check(pinyin, final)) {
-                characterCount += charList.length;
-                hasCharacters = true;
+                for (const item of charList) {
+                    const ch = item[0];
+                    if (onlyShowCommon && commonChars.size > 0 && !commonChars.has(ch)) continue;
+                    characterCount++;
+                    hasCharacters = true;
+                }
             }
         }
 
@@ -240,6 +266,7 @@ function checkFinalsMutualExclusive() {
                         if (charToPinyinDict[char] && charToPinyinDict[char].length > 1) {
                             continue; // 跳过多音字
                         }
+                        if (onlyShowCommon && commonChars.size > 0 && !commonChars.has(char)) continue;
                         chars1.add(char);
                     }
                 }
@@ -248,6 +275,7 @@ function checkFinalsMutualExclusive() {
                         if (charToPinyinDict[char] && charToPinyinDict[char].length > 1) {
                             continue;
                         }
+                        if (onlyShowCommon && commonChars.size > 0 && !commonChars.has(char)) continue;
                         chars2.add(char);
                     }
                 }
@@ -287,6 +315,7 @@ function checkCharsUnmatched() {
     for (const [pinyin, charList] of Object.entries(pinyinDict || {})) {
         for (const item of charList) {
             const ch = item[0];
+            if (onlyShowCommon && commonChars.size > 0 && !commonChars.has(ch)) continue;
             if (!charToPinyins[ch]) charToPinyins[ch] = [];
             if (!charToPinyins[ch].includes(pinyin)) {
                 charToPinyins[ch].push(pinyin);
@@ -437,9 +466,10 @@ function runRedundancyCheck() {
 async function loadPinyinData() {
     const resultDiv = document.getElementById('result');
     try {
-        const [pinyinResp, charResp] = await Promise.all([
+        const [pinyinResp, charResp, commonResp] = await Promise.all([
             fetch('assets/json/pinyin_simp.dict.json'),
-            fetch('assets/json/char_to_pinyin.dict.json')
+            fetch('assets/json/char_to_pinyin.dict.json'),
+            fetch('assets/txt/常用字和次常用字.txt')
         ]);
 
         if (!pinyinResp.ok) {
@@ -455,6 +485,27 @@ async function loadPinyinData() {
 
         pinyinDict = await pinyinResp.json();
         charToPinyinDict = await charResp.json();
+
+        // 处理常用字文件（如果存在）
+        if (commonResp && commonResp.ok) {
+            const txt = await commonResp.text();
+            // 去除所有空白字符，逐字加入集合
+            const normalized = txt.replace(/\s+/g, '');
+            for (const ch of normalized) {
+                // 过滤 ASCII 空白等，保留非空字符
+                if (ch) commonChars.add(ch);
+            }
+            // 初始按钮状态与 onlyShowCommon 一致
+            if (commonBtn) {
+                if (onlyShowCommon) commonBtn.classList.add('active');
+                else commonBtn.classList.remove('active');
+            }
+        } else {
+            // 如果未找到常用字文件，则关闭过滤以避免结果为空，并移除按钮高亮
+            onlyShowCommon = false;
+            if (commonBtn) commonBtn.classList.remove('active');
+            console.warn('常用字文件未找到，已禁用“只显示常用字”过滤。');
+        }
 
         resultDiv.innerHTML = '<p class="loading">数据加载完成，请选择韵母...</p>';
 
