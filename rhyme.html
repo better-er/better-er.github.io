@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>押韵助手</title>
+    <link rel="stylesheet" href="assets/css/rhyme.css">
+</head>
+<body>
+<h1>押韵助手</h1>
+<p class="subtitle">严格按照汉语拼音方案区分 · 模糊匹配由用户自行选择</p>
+
+<div class="controls">
+    <button class="control-btn" id="mode-btn">切换为多选</button>
+    <button class="control-btn" id="clear-btn">清除选择</button>
+</div>
+
+<div class="selected" id="selected-finals">
+    已选韵母：暂无
+</div>
+
+<div class="table-container">
+    <table class="vowel-table">
+        <thead>
+        <tr>
+            <th></th>
+            <th>
+                <button onclick="toggleFinal('i')" class="table-header-button" data-final="i">i<br>｜ 衣</button>
+            </th>
+            <th>
+                <button onclick="toggleFinal('u')" class="table-header-button" data-final="u">u<br>ㄨ 乌</button>
+            </th>
+            <th>
+                <button onclick="toggleFinal('ü')" class="table-header-button" data-final="ü">ü<br>ㄩ 迂</button>
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td><button onclick="toggleFinal('a')" class="table-row-button" data-final="a">a<br>ㄚ 啊</button></td>
+            <td><button onclick="toggleFinal('ia')" class="table-cell-button" data-final="ia">ia<br>ㄧㄚ 呀</button></td>
+            <td><button onclick="toggleFinal('ua')" class="table-cell-button" data-final="ua">ua<br>ㄨㄚ 蛙</button></td>
+            <td class="empty-cell"></td>
+        </tr>
+        <tr>
+            <td><button onclick="toggleFinal('o')" class="table-row-button" data-final="o">o<br>ㄛ 喔</button></td>
+            <td class="empty-cell"></td>
+            <td><button onclick="toggleFinal('uo')" class="table-cell-button" data-final="uo">uo<br>ㄨㄛ 窝</button></td>
+            <td class="empty-cell"></td>
+        </tr>
+        <tr>
+            <td><button onclick="toggleFinal('e')" class="table-row-button" data-final="e">e<br>ㄜ 鹅</button></td>
+            <td><button onclick="toggleFinal('ie')" class="table-cell-button" data-final="ie">ie<br>ㄧㄝ 耶</button></td>
+            <td class="empty-cell"></td>
+            <td><button onclick="toggleFinal('üe')" class="table-cell-button" data-final="üe">üe<br>ㄩㄝ 约</button></td>
+        </tr>
+        <tr>
+            <td><button onclick="toggleFinal('ai')" class="table-row-button" data-final="ai">ai<br>ㄞ 哀</button></td>
+            <td class="empty-cell"></td>
+            <td><button onclick="toggleFinal('uai')" class="table-cell-button" data-final="uai">uai<br>ㄨㄞ 歪</button></td>
+            <td class="empty-cell"></td>
+        </tr>
+        <tr>
+            <td><button onclick="toggleFinal('ei')" class="table-row-button" data-final="ei">ei<br>ㄟ 欸</button></td>
+            <td class="empty-cell"></td>
+            <td><button onclick="toggleFinal('uei')" class="table-cell-button" data-final="uei">uei<br>ㄨㄟ 威</button></td>
+            <td class="empty-cell"></td>
+        </tr>
+        <tr>
+            <td><button onclick="toggleFinal('ao')" class="table-row-button" data-final="ao">ao<br>ㄠ 熬</button></td>
+            <td><button onclick="toggleFinal('iao')" class="table-cell-button" data-final="iao">iao<br>ㄧㄠ 腰</button></td>
+            <td class="empty-cell"></td>
+            <td class="empty-cell"></td>
+        </tr>
+        <tr>
+            <td><button onclick="toggleFinal('ou')" class="table-row-button" data-final="ou">ou<br>ㄡ 欧</button></td>
+            <td><button onclick="toggleFinal('iou')" class="table-cell-button" data-final="iou">iou<br>ㄧㄡ 忧</button></td>
+            <td class="empty-cell"></td>
+            <td class="empty-cell"></td>
+        </tr>
+        <tr>
+            <td><button onclick="toggleFinal('an')" class="table-row-button" data-final="an">an<br>ㄢ 安</button></td>
+            <td><button onclick="toggleFinal('ian')" class="table-cell-button" data-final="ian">ian<br>ㄧㄢ 烟</button></td>
+            <td><button onclick="toggleFinal('uan')" class="table-cell-button" data-final="uan">uan<br>ㄨㄢ 弯</button></td>
+            <td><button onclick="toggleFinal('üan')" class="table-cell-button" data-final="üan">üan<br>ㄩㄢ 冤</button></td>
+        </tr>
+        <tr>
+            <td><button onclick="toggleFinal('en')" class="table-row-button" data-final="en">en<br>ㄣ 恩</button></td>
+            <td><button onclick="toggleFinal('in')" class="table-cell-button" data-final="in">in<br>ㄧㄣ 因</button></td>
+            <td><button onclick="toggleFinal('uen')" class="table-cell-button" data-final="uen">uen<br>ㄨㄣ 温</button></td>
+            <td><button onclick="toggleFinal('ün')" class="table-cell-button" data-final="ün">ün<br>ㄩㄣ 晕</button></td>
+        </tr>
+        <tr>
+            <td><button onclick="toggleFinal('ang')" class="table-row-button" data-final="ang">ang<br>ㄤ 昂</button></td>
+            <td><button onclick="toggleFinal('iang')" class="table-cell-button" data-final="iang">iang<br>ㄧㄤ 央</button></td>
+            <td><button onclick="toggleFinal('uang')" class="table-cell-button" data-final="uang">uang<br>ㄨㄤ 汪</button></td>
+            <td class="empty-cell"></td>
+        </tr>
+        <tr>
+            <td><button onclick="toggleFinal('eng')" class="table-row-button" data-final="eng">eng<br>ㄥ 亨的韵母</button></td>
+            <td><button onclick="toggleFinal('ing')" class="table-cell-button" data-final="ing">ing<br>ㄧㄥ 英</button></td>
+            <td><button onclick="toggleFinal('ueng')" class="table-cell-button" data-final="ueng">ueng<br>ㄨㄥ 翁</button></td>
+            <td class="empty-cell"></td>
+        </tr>
+        <tr>
+            <td><button onclick="toggleFinal('ong')" class="table-row-button" data-final="ong">ong<br>ㄨㄥ 轰的韵母</button></td>
+            <td><button onclick="toggleFinal('iong')" class="table-cell-button" data-final="iong">iong<br>ㄩㄥ 雍</button></td>
+            <td class="empty-cell"></td>
+            <td class="empty-cell"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="special-vowels">
+    <button onclick="toggleFinal('er')" class="special-button" data-final="er">er<br>儿</button>
+    <button onclick="toggleFinal('zi')" class="special-button" data-final="zi">(z)i<br>(ㄗ ㄘ ㄙ)</button>
+    <button onclick="toggleFinal('zhi')" class="special-button" data-final="zhi">(zh)i<br>(ㄓ ㄔ ㄕ ㄖ)</button>
+</div>
+
+<div id="result" class="result">
+    <p class="loading">请选择一个或多个韵母...</p>
+</div>
+<div id="redundancy-check" class="redundancy-check"></div>
+
+<script src="assets/js/rhyme.js" defer></script>
+</body>
+</html>
