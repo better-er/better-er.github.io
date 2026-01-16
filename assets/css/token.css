@@ -129,11 +129,10 @@ textarea:focus {
     gap: 4px;
     margin-bottom: 6px;
     white-space: nowrap;
-    padding: 4px 8px;
     border-radius: 6px;
     position: relative;
     margin-left: -20px;
-    padding-left: 20px;
+    padding: 4px 8px 4px 20px;
 }
 
 /* 不匹配行：左侧添加警告图标 */
@@ -202,7 +201,7 @@ p.small {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: linear-gradient(90deg, rgba(74,111,165,0.06), transparent);
+    background: linear-gradient(90deg, rgba(74, 111, 165, 0.06), transparent);
     border: 1px dashed var(--border-light);
     color: var(--text-primary);
     padding: 8px 12px;
@@ -210,12 +209,16 @@ p.small {
     font-size: 0.86rem;
     margin-bottom: 12px;
 }
+
 .goto-kana a {
     color: var(--accent);
     text-decoration: none;
     font-weight: 600;
 }
-.goto-kana a:hover { text-decoration: underline; }
+
+.goto-kana a:hover {
+    text-decoration: underline;
+}
 
 /* 无障碍隐藏文本（屏幕阅读器可见，视觉上隐藏） */
 .visually-hidden {
@@ -255,9 +258,11 @@ p.small {
         margin: 12px;
         font-size: 0.9rem;
     }
+
     .multi-container {
         flex-direction: column;
     }
+
     .multi-box {
         margin-bottom: 16px;
     }

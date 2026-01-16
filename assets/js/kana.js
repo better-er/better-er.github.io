@@ -86,6 +86,10 @@ const App = {
     _autoConvertTimer: null,
     _isConverting: false,
     _originalConvertHTML: null,
+    // 活动模式：null | 'onechar' | 'kana'
+    _activeMode: null,
+    // CSS 类名（非必须，保留以便样式使用）
+    ACTIVE_CLASS: 'active',
     SMALL_KANA: new Set('ゃゅょっゎァィゥェォャュョッヮ'),
 
     init() {
@@ -104,6 +108,7 @@ const App = {
             btnConvert: document.getElementById('btn-convert'),
             btnClear: document.getElementById('btn-clear'),
             btnCopy: document.getElementById('btn-copy'),
+            btnKanaOnly: document.getElementById('btn-kana-only'),
             desc: document.getElementById('desc'),
             guidePanel: document.getElementById('guide-panel')
         };
@@ -113,8 +118,6 @@ const App = {
         document.title = TEXT.PAGE_TITLE;
         document.getElementById('page-title').textContent = TEXT.PAGE_TITLE;
         this.els.mainTitle.textContent = TEXT.MAIN_TITLE;
-        this.els.desc.innerHTML = TEXT.DESC_HTML || '';
-        this.els.guidePanel.innerHTML = TEXT.GUIDE_HTML || '';
         if (!this.els.inputRuby.value) this.els.inputRuby.value = TEXT.DEFAULT_INPUT;
     },
 
@@ -131,6 +134,50 @@ const App = {
             const data = JSON.parse(raw);
             if (data.input) this.els.inputRuby.value = data.input;
         } catch (e) { }
+    },
+
+    // 切换/选择转换模式。如果再次传入相同模式则取消选择。
+    setMode(mode) {
+        if (this._activeMode === mode) {
+            // 取消选择
+            this._activeMode = null;
+            this._updateModeUI();
+            return;
+        }
+        this._activeMode = mode;
+        this._updateModeUI();
+        // 选中后立即执行对应的转换
+        if (mode === 'onechar') this.convert();
+        else if (mode === 'kana') this.toKanaOnly();
+    },
+
+    // 更新按钮显示以反映当前活动模式（互斥）
+    _updateModeUI() {
+        const b1 = this.els.btnConvert;
+        const b2 = this.els.btnKanaOnly;
+        if (b1) {
+            if (this._activeMode === 'onechar') {
+                b1.classList.add(this.ACTIVE_CLASS);
+                // 使用内联高亮样式，避免修改 CSS 文件
+                b1.style.backgroundColor = '#4caf50';
+                b1.style.color = '#fff';
+            } else {
+                b1.classList.remove(this.ACTIVE_CLASS);
+                b1.style.backgroundColor = '';
+                b1.style.color = '';
+            }
+        }
+        if (b2) {
+            if (this._activeMode === 'kana') {
+                b2.classList.add(this.ACTIVE_CLASS);
+                b2.style.backgroundColor = '#2196f3';
+                b2.style.color = '#fff';
+            } else {
+                b2.classList.remove(this.ACTIVE_CLASS);
+                b2.style.backgroundColor = '';
+                b2.style.color = '';
+            }
+        }
     },
 
     splitIntoSyllables(kana) {
@@ -193,6 +240,41 @@ const App = {
         this._isConverting = false;
     },
 
+    // 将输入的 [漢]{かな} 注音格式转换为全假名文本。
+    toKanaOnly() {
+        if (this._isConverting) return;
+        this._isConverting = true;
+        // 通过禁用“转为全假名”按钮来提供简单的加载反馈
+        if (this.els.btnKanaOnly) {
+            this.els.btnKanaOnly.disabled = true;
+            const origText = this.els.btnKanaOnly.textContent;
+            this.els.btnKanaOnly.textContent = '转为全假名中...';
+            setTimeout(() => {
+                // 执行转换
+                const input = this.els.inputRuby.value || '';
+                // 模式匹配 [汉]{かな} 并替换为假名部分
+                const pattern = /\[([^\]]+)]\{([^}]+)}/g;
+                let result = input.replace(pattern, (m, kanji, kana) => kana);
+                result = result.replace(/[\[\]{}]/g, '');
+                result = result
+                    .split(/\r?\n/)
+                    .filter(line => line.trim() !== '')
+                    .join('\n');
+
+                this.els.outputResult.innerHTML = `<button class="copy-btn" id="btn-copy">复制</button>${result}`;
+                this._updateCopyButtonRef();
+
+                // 恢复按钮状态
+                this.els.btnKanaOnly.textContent = origText;
+                this.els.btnKanaOnly.disabled = false;
+                this.saveData();
+                this._isConverting = false;
+            }, 150);
+        } else {
+            this._isConverting = false;
+        }
+    },
+
     copyResult() {
         const resultText = this.els.outputResult.textContent.replace('复制', '').trim();
         navigator.clipboard.writeText(resultText).then(() => {
@@ -238,19 +320,23 @@ const App = {
     },
 
     bindEvents() {
-        this.els.btnConvert.addEventListener('click', () => this.convert());
+        // 点击切换模式（互斥），选中时会自动执行对应转换
+        if (this.els.btnConvert) this.els.btnConvert.addEventListener('click', () => this.setMode('onechar'));
+        if (this.els.btnKanaOnly) this.els.btnKanaOnly.addEventListener('click', () => this.setMode('kana'));
         this.els.btnClear.addEventListener('click', () => this.clear());
 
         this.els.inputRuby.addEventListener('input', () => {
             this.saveData();
             if (this._autoConvertTimer) clearTimeout(this._autoConvertTimer);
             this._autoConvertTimer = setTimeout(() => {
-                this.convert();
+                // 根据活动模式自动执行；默认执行一字一音转换
+                if (this._activeMode === 'kana') this.toKanaOnly();
+                else this.convert();
                 this._autoConvertTimer = null;
             }, this.AUTO_CONVERT_DEBOUNCE_MS);
         });
 
-        // initial render
+        // 初始渲染
         this.convert();
     }
 };

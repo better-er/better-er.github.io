@@ -72,7 +72,8 @@ const App = {
                 this.els.multiInput1.value = multi.input1 || '';
                 this.els.multiInput2.value = multi.input2 || '';
             }
-        } catch (e) {}
+        } catch (e) {
+        }
     },
 
     tokenize(line, splitCJK = true) {
@@ -186,7 +187,7 @@ const App = {
             }
         }
 
-        this.els.mismatchCount.textContent = mismatchCount;
+        this.els.mismatchCount.textContent = mismatchCount.toString();
     },
 
     bindEvents() {

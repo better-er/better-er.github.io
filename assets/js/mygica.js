@@ -57,6 +57,7 @@ function tryLoadSequential(imgEl, srcList, onSuccess, onFailure) {
     // srcList: URI（字符串）数组。按顺序尝试每个，直到加载成功为止。
     const filtered = (srcList || []).map(s => (typeof s === 'string' ? s.trim() : '')).filter(Boolean);
     let idx = 0;
+
     function attempt() {
         if (idx >= filtered.length) {
             if (onFailure) onFailure();
@@ -76,13 +77,14 @@ function tryLoadSequential(imgEl, srcList, onSuccess, onFailure) {
         // 触发加载
         imgEl.src = s;
     }
+
     attempt();
 }
 
 function renderGallery() {
     const folder = folderSelect.value;
     const mode = modeSelect.value;
-    const images = imageMap[folder] || [];
+    const images = imageMap[folder];
 
     gallery.innerHTML = '';
     gallery.classList.toggle('single-col', mode === 'all');
@@ -105,7 +107,7 @@ function renderGallery() {
             item.appendChild(num);
 
             const img = document.createElement('img');
-            img.alt = (Array.isArray(srcs) ? srcs[0] : String(srcs)).split('/').pop();
+            img.alt = `${folder}_${idx + 1}`;
             img.style.transition = 'all 0.4s ease';
             item.appendChild(img);
 
@@ -139,14 +141,14 @@ function renderGallery() {
         gallery.style.marginLeft = '';
         gallery.style.marginRight = '';
 
-        images.forEach(srcs => {
+        images.forEach((srcs, idx) => {
             if (!Array.isArray(srcs)) srcs = [srcs];
 
             const item = document.createElement('div');
             item.className = 'gallery-item';
 
             const img = document.createElement('img');
-            img.alt = srcs[0].split('/').pop();
+            img.alt = `${folder}_${idx + 1}`;
             img.setAttribute('data-srcs', JSON.stringify(srcs));
             img.src = '';
             img.style.filter = 'blur(8px)';

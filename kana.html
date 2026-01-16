@@ -13,8 +13,9 @@
         对齐工具支持格式：<br>
         1. 全假名文本<br>
         2. 空格分隔的罗马音<br>
-        3. 「一字一音」的汉字与假名混合，保持可读性<br>
+        3. 「一字一音」的汉字与假名混合，可读性最佳<br>
         前两者可简单地通过大模型生成，第三种格式需要额外借助本工具转换生成。<br>
+        由于调音软件通常只支持前两者，因此也适配了全假名文本的转换。<br>
         注意：大模型可能会犯错，请相信自己的耳朵。<br><br>
         工具说明：<br>
         - 接收大模型容易生成的 [漢]{かん} 注音标注格式文本输入<br>
@@ -22,7 +23,7 @@
     </p>
 
     <div class="box">
-        <h3>输入待转换的文本（此步骤推荐使用大模型预处理）</h3>
+        <h3>输入待转换的文本（[漢]{かん} 形式，此步骤推荐使用大模型预处理）</h3>
 
         <!-- 操作指南：明确区分提示与输入 -->
         <div class="guide-panel">
@@ -35,16 +36,19 @@
                 <li>确保每个汉字都包裹在 <code>[]</code> 中，对应注音包裹在 <code>{}</code> 内。</li>
             </ol>
             <p><strong>示例转换：</strong><br>
-            - 输入：<code>君が持ってきた漫画</code><br>
-            &nbsp;&nbsp;输出：<code>[君]{きみ}が[持]{も}てきた[漫]{まん}[画]{が}</code><br>
-            - 输入：<code>くれた知らない名前のお花</code><br>
-            &nbsp;&nbsp;输出：<code>くれた[知]{し}らない[名]{な}[前]{まえ}のお[花]{はな}</code>
+                - 输入：<code>君が持ってきた漫画</code><br>
+                &nbsp;&nbsp;输出：<code>[君]{きみ}が[持]{も}てきた[漫]{まん}[画]{が}</code><br>
+                - 输入：<code>くれた知らない名前のお花</code><br>
+                &nbsp;&nbsp;输出：<code>くれた[知]{し}らない[名]{な}[前]{まえ}のお[花]{はな}</code>
             </p>
         </div>
 
-        <textarea id="input-ruby" placeholder="请在此粘贴日语文本（如：[君]{きみ}が[持]{も}てきた[漫]{まん}[画]{が}）"></textarea>
+        <label for="input-ruby"></label>
+        <textarea id="input-ruby"
+                  placeholder="请在此粘贴日语文本（如：[君]{きみ}が[持]{も}てきた[漫]{まん}[画]{が}）"></textarea>
         <div class="button-group">
             <button id="btn-convert">转换为一字一音</button>
+            <button id="btn-kana-only">转为全假名</button>
             <button id="btn-clear">清空</button>
         </div>
     </div>

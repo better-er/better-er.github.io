@@ -1,12 +1,10 @@
 body {
     font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", sans-serif;
-    margin: 20px;
     line-height: 1.8;
     background-color: #f8f9fa;
     color: #333;
     max-width: 1200px;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 20px auto;
     padding: 25px;
     box-sizing: border-box;
 }
@@ -194,7 +192,7 @@ button.control-btn.active {
 
 .result p {
     margin: 10px 0;
-    letter-spacing: 2.5px;
+    letter-spacing: 3px;
 }
 
 .loading {
