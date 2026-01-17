@@ -252,6 +252,66 @@ p.small {
     background: var(--border-light);
 }
 
+/* 按钮基础样式，统一页面上的交互按钮外观 */
+button {
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border-light);
+    background: transparent;
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+button:hover {
+    background: var(--hover-overlay);
+}
+
+/* 添加新词版本按钮 - 作为主操作，使用强调色 */
+button.add-btn {
+    background: var(--accent);
+    color: #fff;
+    border-color: rgba(74,111,165,0.9);
+}
+
+button.add-btn:hover {
+    filter: brightness(0.95);
+}
+
+/* 删除按钮 - 使用细线并在悬停/聚焦时显示红色提示 */
+button.delete-btn {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border-light);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+button.delete-btn:hover {
+    border-color: var(--alert-border);
+    color: var(--alert-border);
+    background: rgba(220,53,69,0.06);
+}
+
+/* 调整 multi-box 中控件按钮的布局与大小，使其与输入区视觉一致 */
+.multi-box > div {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 8px;
+}
+
+/* 在小屏上让按钮行换行，避免溢出 */
+@media (max-width: 480px) {
+    .multi-box > div {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+}
+
 /* 响应式微调 */
 @media (max-width: 768px) {
     body {

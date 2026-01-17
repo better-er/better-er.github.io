@@ -24,11 +24,14 @@
             <label for="multi-input1" class="visually-hidden">原词输入</label>
             <textarea id="multi-input1"></textarea>
         </div>
-        <div class="multi-box">
-            <h3 id="label-new"></h3>
-            <label for="multi-input2" class="visually-hidden">新词输入</label>
-            <textarea id="multi-input2"></textarea>
-        </div>
+
+        <!-- 以前的 variant-boxes 已移除；脚本会把每个新变体作为 .multi-box 直接插入到这里，与原词同级 -->
+    </div>
+
+    <!-- 添加/说明按钮放在容器外，便于控制布局 -->
+    <div style="display:flex; gap:8px; align-items:center; margin-top:12px;">
+        <button id="add-variant" type="button">添加新词版本</button>
+        <span class="small">可添加多个新词版本并逐列对比</span>
     </div>
 
     <h3 id="multi-preview-title" class="multi-preview-title">
