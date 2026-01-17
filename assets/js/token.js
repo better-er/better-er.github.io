@@ -40,6 +40,12 @@ const App = {
             multiPreview: document.getElementById('multi-preview'),
             mismatchCount: document.querySelector('.mismatch-count')
         };
+
+        // 滚动同步状态（用于防止递归触发与记录最后的滚动源）
+        this._scrollState = {
+            isSyncing: false,
+            lastSource: null
+        };
     },
 
     setupText() {
@@ -76,7 +82,7 @@ const App = {
         }
     },
 
-    tokenize(line, splitCJK = true) {
+    tokenize(line) {
         const tokens = [];
         let currentWord = '';
         let isInEnglish = false;
@@ -113,17 +119,9 @@ const App = {
                 continue;
             }
 
+            // 对 CJK（汉字 / 假名 / 片假名）恒按单字符拆分为独立 token
             if (isCJKChar(c)) {
-                if (splitCJK) {
-                    tokens.push({text: c});
-                } else {
-                    const last = tokens[tokens.length - 1];
-                    if (last && isCJKChar(last.text[last.text.length - 1]) && /^[\u4E00-\u9FFF\u3040-\u309F\u30A0-\u30FF]+$/.test(last.text)) {
-                        last.text += c;
-                    } else {
-                        tokens.push({text: c});
-                    }
-                }
+                tokens.push({text: c});
                 continue;
             }
 
@@ -188,6 +186,9 @@ const App = {
         }
 
         this.els.mismatchCount.textContent = mismatchCount.toString();
+
+        // 重新渲染后尽量保持滚动位置同步（若之前有滚动来源，则使用其比例）
+        this._syncAfterRender();
     },
 
     bindEvents() {
@@ -201,7 +202,72 @@ const App = {
         this.els.multiInput1.addEventListener('input', update);
         this.els.multiInput2.addEventListener('input', update);
 
+        // 滚动同步：将计算滚动比与应用滚动分离为独立函数，避免重复代码
+        // 计算给定元素的滚动比例（0..1）
+        const _computeScrollRatio = (el) => {
+            const scrollTop = el.scrollTop;
+            const scrollHeight = el.scrollHeight;
+            const clientHeight = el.clientHeight;
+            const scrollable = Math.max(0, scrollHeight - clientHeight);
+            return scrollable > 0 ? scrollTop / scrollable : 0;
+        };
+
+        // 将比例应用到所有目标元素（排除 src 本身）
+        const _applyRatioToTargets = (ratio, src) => {
+            const targets = [this.els.multiInput1, this.els.multiInput2, this.els.multiPreview];
+            for (const t of targets) {
+                if (t === src) continue;
+                const tgtScrollHeight = t.scrollHeight;
+                const tgtClientHeight = t.clientHeight;
+                const tgtScrollable = Math.max(0, tgtScrollHeight - tgtClientHeight);
+                t.scrollTop = Math.round(ratio * tgtScrollable);
+            }
+        };
+
+        // 从指定元素触发一次同步（带防止递归触发与记录最后源的保护）
+        const _syncFrom = (sourceEl) => {
+            if (this._scrollState.isSyncing) return;
+            this._scrollState.isSyncing = true;
+            this._scrollState.lastSource = sourceEl;
+
+            const ratio = _computeScrollRatio(sourceEl);
+            _applyRatioToTargets(ratio, sourceEl);
+
+            // 在下一帧释放锁，允许后续用户滚动继续触发
+            requestAnimationFrame(() => { this._scrollState.isSyncing = false; });
+        };
+
+        // 绑定滚动监听器
+        this.els.multiInput1.addEventListener('scroll', () => _syncFrom(this.els.multiInput1));
+        this.els.multiInput2.addEventListener('scroll', () => _syncFrom(this.els.multiInput2));
+        this.els.multiPreview.addEventListener('scroll', () => _syncFrom(this.els.multiPreview));
+
         update();
+    },
+
+    // 在渲染完成后尽量保持视图位置稳定：如果有最近的滚动源，则以该源的比例同步其它区域
+    _syncAfterRender() {
+        const last = this._scrollState.lastSource;
+        if (!last) return;
+        this._scrollState.isSyncing = true;
+        const ratio = (function(el) {
+            const scrollHeight = el.scrollHeight;
+            const clientHeight = el.clientHeight;
+            const scrollable = Math.max(0, scrollHeight - clientHeight);
+            return scrollable > 0 ? el.scrollTop / scrollable : 0;
+        })(last);
+
+        // 复用上面实现，把比例应用到目标元素
+        const targets = [this.els.multiInput1, this.els.multiInput2, this.els.multiPreview];
+        for (const t of targets) {
+            if (t === last) continue;
+            const tgtScrollHeight = t.scrollHeight;
+            const tgtClientHeight = t.clientHeight;
+            const tgtScrollable = Math.max(0, tgtScrollHeight - tgtClientHeight);
+            t.scrollTop = Math.round(ratio * tgtScrollable);
+        }
+
+        requestAnimationFrame(() => { this._scrollState.isSyncing = false; });
     }
 };
 
