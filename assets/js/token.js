@@ -86,7 +86,7 @@ const App = {
     loadData() {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (!raw) {
-            // 尝试向后兼容：检查旧的 storage key（old_token.js 使用的 key）并迁移
+            // 尝试向后兼容：检查旧的 storage key 并迁移
             const OLD_STORAGE_KEY = 'token_tool_data';
             const oldRaw = localStorage.getItem(OLD_STORAGE_KEY);
             if (oldRaw) {
@@ -328,8 +328,11 @@ const App = {
     renderAlignedPairs() {
         const container = this.els.multiPreview;
         const input1Lines = this.els.multiInput1.value.split('\n');
-        const variantLines = this.variants.map(v => v.textarea.value.split('\n'));
-        const maxLen = Math.max(input1Lines.length, ...variantLines.map(l => l.length));
+
+        // 仅使用未被隐藏（未删除）的变体参与对比与渲染
+        const visibleVariants = this.variants.filter(v => !v.hidden);
+        const variantLines = visibleVariants.map(v => v.textarea.value.split('\n'));
+        const maxLen = Math.max(input1Lines.length, ...variantLines.map(l => l.length), 0);
 
         let mismatchCount = 0;
         container.innerHTML = '';
@@ -338,13 +341,13 @@ const App = {
             const line1 = (input1Lines[i] || '').trim();
             const tokens1 = this.tokenize(line1);
 
-            // collect tokens for each variant for this line
-            const variantTokens = this.variants.map((v, idx) => {
+            // 为当前行收集每个可见变体的 token 列表
+            const variantTokens = visibleVariants.map((v, idx) => {
                 const l = (variantLines[idx][i] || '').trim();
                 return this.tokenize(l);
             });
 
-            // mismatch if any variant token length != original token length
+            // 只有可见变体参与不匹配判断
             const anyMismatch = variantTokens.some(toks => toks.length !== tokens1.length);
             if (anyMismatch) mismatchCount++;
 
@@ -352,8 +355,7 @@ const App = {
             row.className = 'pair-row';
             if (anyMismatch) row.classList.add('mismatch');
 
-            // First column: original tokens
-            const maxTokenLen = Math.max(tokens1.length, ...variantTokens.map(t => t.length));
+            const maxTokenLen = Math.max(tokens1.length, ...variantTokens.map(t => t.length), 0);
             for (let j = 0; j < maxTokenLen; j++) {
                 const pairCol = document.createElement('div');
                 pairCol.className = 'pair';
@@ -363,8 +365,8 @@ const App = {
                 top.textContent = tokens1[j] ? tokens1[j].text : '';
                 pairCol.appendChild(top);
 
-                // For each variant append its corresponding token as a bottom-like span (stacked)
-                for (let vi = 0; vi < this.variants.length; vi++) {
+                // 逐个追加每个可见变体对应的 token（若没有则显示空）
+                for (let vi = 0; vi < visibleVariants.length; vi++) {
                     const bottom = document.createElement('span');
                     bottom.className = 'bottom';
                     bottom.style.display = 'block';
@@ -381,7 +383,7 @@ const App = {
 
         this.els.mismatchCount.textContent = mismatchCount.toString();
 
-        // 重新渲染后尽量保持滚动位置同步（若之前有滚动来源，则使用其比例）
+        // 渲染后尽量保持滚动位置（如果之前有滚动源）
         this._syncAfterRender();
     },
 
