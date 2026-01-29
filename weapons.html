@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>武器属性筛选器</title>
+    <title>武器基质属性筛选器</title>
     <script defer src="/assets/js/back-to-home.js"></script>
     <link rel="stylesheet" href="assets/css/weapons.css">
 </head>
@@ -37,6 +37,7 @@
         <!-- 控制按钮 -->
         <div class="controls">
             <button class="btn-clear" id="btn-clear">清空选择</button>
+            <button class="btn-see-all" id="btn-see-all" style="display: none;">我就要看</button>
         </div>
 
         <div class="status" id="status">请选择恰好 3 个属性进行筛选</div>
@@ -114,6 +115,8 @@
 
             // 绑定清空按钮
             document.getElementById('btn-clear').addEventListener('click', clearSelection);
+            // 绑定“我就要看”按钮
+            document.getElementById('btn-see-all').addEventListener('click', filterWeaponsLoose);
 
             // 初次渲染状态
             updateStatus();
@@ -147,16 +150,21 @@
             filterWeapons();
         }
 
-        // 更新状态提示
+        // 更新状态提示 & 控制按钮显示
         function updateStatus() {
             const statusEl = document.getElementById('status');
+            const seeAllBtn = document.getElementById('btn-see-all');
             const count = selectedAttrs.size;
+
             if (count === 0) {
                 statusEl.textContent = '请选择恰好 3 个属性进行筛选';
+                seeAllBtn.style.display = 'none';
             } else if (count === 3) {
                 statusEl.textContent = `已选中 ${count} 个属性：${[...selectedAttrs].join('、')}`;
+                seeAllBtn.style.display = 'none';
             } else {
                 statusEl.textContent = `已选中 ${count} 个属性，请再选 ${3 - count} 个以匹配`;
+                seeAllBtn.style.display = 'inline-block';
             }
         }
 
@@ -170,16 +178,15 @@
             filterWeapons();
         }
 
-        // 筛选武器（仅当选中恰好 3 项时执行）
+        // 标准筛选：仅当选中 3 个时触发（精确匹配）
         function filterWeapons() {
             const resultsEl = document.getElementById('results');
             resultsEl.innerHTML = '';
 
             if (selectedAttrs.size !== 3) {
-                return;
+                return; // 仅当满3项时才做精确匹配
             }
 
-            // 筛选：武器的三个属性集合必须完全等于选中集合（无序）
             const target = new Set(selectedAttrs);
             const filtered = weaponsData.filter(w => {
                 const weaponSet = new Set([w.effect_1, w.effect_2, w.effect_3]);
@@ -189,12 +196,35 @@
                        [...target].every(e => weaponSet.has(e));
             });
 
+            renderResults(filtered);
+        }
+
+        // 宽松筛选：当前选中多少个，就匹配多少个（任意数量）
+        function filterWeaponsLoose() {
+            const resultsEl = document.getElementById('results');
+            resultsEl.innerHTML = '';
+
+            if (selectedAttrs.size === 0) return;
+
+            const target = new Set(selectedAttrs);
+            const filtered = weaponsData.filter(w => {
+                const weaponSet = new Set([w.effect_1, w.effect_2, w.effect_3]);
+                // 匹配规则：选中的每个属性都必须出现在武器的三个属性中
+                return [...target].every(attr => weaponSet.has(attr));
+            });
+
+            renderResults(filtered);
+        }
+
+        // 公共渲染函数：避免重复代码
+        function renderResults(filtered) {
+            const resultsEl = document.getElementById('results');
             if (filtered.length === 0) {
-                resultsEl.innerHTML = `<div class="no-results">未找到符合所选三个属性的武器</div>`;
+                resultsEl.innerHTML = `<div class="no-results">未找到符合所选属性的武器</div>`;
                 return;
             }
 
-            // 渲染结果
+            resultsEl.innerHTML = '';
             filtered.forEach(w => {
                 const card = document.createElement('div');
                 card.className = 'weapon-card';

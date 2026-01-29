@@ -5,19 +5,22 @@ body {
     background-color: #f8f9fa;
     color: #333;
 }
+
 .container {
     max-width: 1200px;
     margin: 0 auto;
     background: white;
     padding: 30px;
     border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
+
 h1 {
     text-align: center;
     color: #2c3e50;
     margin-bottom: 30px;
 }
+
 .loading-info {
     text-align: center;
     color: #666;
@@ -25,6 +28,7 @@ h1 {
     margin: -8px 0 20px 0;
     font-style: italic;
 }
+
 .category {
     margin-bottom: 30px;
     padding: 15px;
@@ -32,6 +36,7 @@ h1 {
     border-radius: 8px;
     background-color: #fafafa;
 }
+
 .category h2 {
     color: #555;
     margin-bottom: 15px;
@@ -39,12 +44,14 @@ h1 {
     padding-bottom: 8px;
     font-weight: 600;
 }
+
 .tag-container {
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
     margin-top: 10px;
 }
+
 .tag {
     padding: 10px 16px;
     border: 1px solid #ddd;
@@ -54,19 +61,23 @@ h1 {
     transition: all 0.2s ease;
     white-space: nowrap;
 }
+
 .tag:hover {
     background-color: #f0f0f0;
 }
+
 .tag.selected {
     background-color: #3498db;
     color: white;
     border-color: #2980b9;
     box-shadow: 0 2px 6px rgba(52, 152, 219, 0.3);
 }
+
 .controls {
     text-align: center;
     margin: 30px 0;
 }
+
 button {
     padding: 12px 24px;
     font-size: 16px;
@@ -75,13 +86,16 @@ button {
     cursor: pointer;
     transition: background-color 0.2s;
 }
+
 .btn-clear {
     background-color: #e74c3c;
     color: white;
 }
+
 .btn-clear:hover {
     background-color: #c0392b;
 }
+
 .status {
     text-align: center;
     margin: 20px 0;
@@ -89,9 +103,11 @@ button {
     font-style: italic;
     min-height: 24px;
 }
+
 .results {
     margin-top: 40px;
 }
+
 .weapon-card {
     border: 1px solid #e0e0e0;
     border-radius: 8px;
@@ -100,26 +116,31 @@ button {
     background: #fafafa;
     transition: transform 0.2s, box-shadow 0.2s;
 }
+
 .weapon-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
 }
+
 .weapon-name {
     font-size: 20px;
     font-weight: 600;
     color: #2c3e50;
     margin-bottom: 5px;
 }
+
 .weapon-detail {
     color: #555;
     font-size: 15px;
     margin: 8px 0;
 }
+
 .weapon-type {
     font-size: 14px;
     color: #666;
     margin-bottom: 10px;
 }
+
 .no-results {
     text-align: center;
     color: #888;
@@ -127,3 +148,18 @@ button {
     padding: 60px;
 }
 
+.btn-see-all {
+    margin-left: 16px;
+    padding: 12px 24px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    background-color: #95a5a6;
+    color: white;
+}
+
+.btn-see-all:hover {
+    background-color: #7f8c8d;
+}
