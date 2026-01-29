@@ -1,0 +1,129 @@
+body {
+    font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f8f9fa;
+    color: #333;
+}
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 30px;
+}
+.loading-info {
+    text-align: center;
+    color: #666;
+    font-size: 14px;
+    margin: -8px 0 20px 0;
+    font-style: italic;
+}
+.category {
+    margin-bottom: 30px;
+    padding: 15px;
+    border: 1px dashed #ddd;
+    border-radius: 8px;
+    background-color: #fafafa;
+}
+.category h2 {
+    color: #555;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 8px;
+    font-weight: 600;
+}
+.tag-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 10px;
+}
+.tag {
+    padding: 10px 16px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+.tag:hover {
+    background-color: #f0f0f0;
+}
+.tag.selected {
+    background-color: #3498db;
+    color: white;
+    border-color: #2980b9;
+    box-shadow: 0 2px 6px rgba(52, 152, 219, 0.3);
+}
+.controls {
+    text-align: center;
+    margin: 30px 0;
+}
+button {
+    padding: 12px 24px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.btn-clear {
+    background-color: #e74c3c;
+    color: white;
+}
+.btn-clear:hover {
+    background-color: #c0392b;
+}
+.status {
+    text-align: center;
+    margin: 20px 0;
+    color: #7f8c8d;
+    font-style: italic;
+    min-height: 24px;
+}
+.results {
+    margin-top: 40px;
+}
+.weapon-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 16px;
+    background: #fafafa;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.weapon-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+}
+.weapon-name {
+    font-size: 20px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+.weapon-detail {
+    color: #555;
+    font-size: 15px;
+    margin: 8px 0;
+}
+.weapon-type {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
+}
+.no-results {
+    text-align: center;
+    color: #888;
+    font-size: 18px;
+    padding: 60px;
+}
+

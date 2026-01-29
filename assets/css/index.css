@@ -82,3 +82,24 @@ a::before {
 a:active::before {
     opacity: 1;
 }
+
+/* 单独为 .desc 中的链接设置普通文本链接样式 */
+.desc a {
+    color: #3498db; /* 和按钮同色，保持视觉一致性 */
+    text-decoration: none; /* 初始无下划线 */
+    font-weight: 500;
+    font-style: normal; /* 不继承 italic */
+    background: none;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+    display: inline; /* 恢复为内联元素，不占满一行 */
+    transition: color 0.3s;
+}
+
+.desc a:hover {
+    color: #2980b9;
+    text-decoration: underline; /* 鼠标悬停显示下划线 */
+    transform: none;
+    box-shadow: none;
+}

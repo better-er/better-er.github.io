@@ -1,0 +1,458 @@
+[
+    {
+        "name": "应急手段",
+        "star_level": "四星",
+        "type": "单手剑",
+        "effect_1": "敏捷提升",
+        "effect_2": "物理伤害提升",
+        "effect_3": "压制"
+    },
+    {
+        "name": "浪潮",
+        "star_level": "四星",
+        "type": "单手剑",
+        "effect_1": "智识提升",
+        "effect_2": "攻击提升",
+        "effect_3": "追袭"
+    },
+    {
+        "name": "钢铁余音",
+        "star_level": "五星",
+        "type": "单手剑",
+        "effect_1": "敏捷提升",
+        "effect_2": "物理伤害提升",
+        "effect_3": "巧技"
+    },
+    {
+        "name": "坚城铸造者",
+        "star_level": "五星",
+        "type": "单手剑",
+        "effect_1": "智识提升",
+        "effect_2": "终结技效率提升",
+        "effect_3": "昂扬"
+    },
+    {
+        "name": "逐鳞3.0",
+        "star_level": "五星",
+        "type": "单手剑",
+        "effect_1": "力量提升",
+        "effect_2": "寒冷伤害提升",
+        "effect_3": "压制"
+    },
+    {
+        "name": "十二问",
+        "star_level": "五星",
+        "type": "单手剑",
+        "effect_1": "敏捷提升",
+        "effect_2": "攻击提升",
+        "effect_3": "附术"
+    },
+    {
+        "name": "O.B.J.轻芒",
+        "star_level": "五星",
+        "type": "单手剑",
+        "effect_1": "敏捷提升",
+        "effect_2": "攻击提升",
+        "effect_3": "流转"
+    },
+    {
+        "name": "仰止",
+        "star_level": "五星",
+        "type": "单手剑",
+        "effect_1": "敏捷提升",
+        "effect_2": "物理伤害提升",
+        "effect_3": "夜幕"
+    },
+    {
+        "name": "宏愿",
+        "star_level": "六星",
+        "type": "单手剑",
+        "effect_1": "敏捷提升",
+        "effect_2": "攻击提升",
+        "effect_3": "附术"
+    },
+    {
+        "name": "不知归",
+        "star_level": "六星",
+        "type": "单手剑",
+        "effect_1": "意志提升",
+        "effect_2": "攻击提升",
+        "effect_3": "流转"
+    },
+    {
+        "name": "熔铸火焰",
+        "star_level": "六星",
+        "type": "单手剑",
+        "effect_1": "智识提升",
+        "effect_2": "攻击提升",
+        "effect_3": "夜幕"
+    },
+    {
+        "name": "黯色火炬",
+        "star_level": "六星",
+        "type": "单手剑",
+        "effect_1": "智识提升",
+        "effect_2": "灼热伤害提升",
+        "effect_3": "附术"
+    },
+    {
+        "name": "扶摇",
+        "star_level": "六星",
+        "type": "单手剑",
+        "effect_1": "主能力提升",
+        "effect_2": "暴击率提升",
+        "effect_3": "夜幕"
+    },
+    {
+        "name": "热熔切割器",
+        "star_level": "六星",
+        "type": "单手剑",
+        "effect_1": "意志提升",
+        "effect_2": "攻击提升",
+        "effect_3": "流转"
+    },
+    {
+        "name": "显赫声名",
+        "star_level": "六星",
+        "type": "单手剑",
+        "effect_1": "主能力提升",
+        "effect_2": "物理伤害提升",
+        "effect_3": "残暴"
+    },
+    {
+        "name": "白夜新星",
+        "star_level": "六星",
+        "type": "单手剑",
+        "effect_1": "主能力提升",
+        "effect_2": "源石技艺提升",
+        "effect_3": "附术"
+    },
+    {
+        "name": "工业零点一",
+        "star_level": "四星",
+        "type": "双手剑",
+        "effect_1": "力量提升",
+        "effect_2": "攻击提升",
+        "effect_3": "压制"
+    },
+    {
+        "name": "淬火者",
+        "star_level": "四星",
+        "type": "双手剑",
+        "effect_1": "意志提升",
+        "effect_2": "生命提升",
+        "effect_3": "粉碎"
+    },
+    {
+        "name": "探骊",
+        "star_level": "五星",
+        "type": "双手剑",
+        "effect_1": "力量提升",
+        "effect_2": "终结技效率提升",
+        "effect_3": "迸发"
+    },
+    {
+        "name": "古渠",
+        "star_level": "五星",
+        "type": "双手剑",
+        "effect_1": "力量提升",
+        "effect_2": "源石技艺提升",
+        "effect_3": "残暴"
+    },
+    {
+        "name": "终点之声",
+        "star_level": "五星",
+        "type": "双手剑",
+        "effect_1": "力量提升",
+        "effect_2": "生命提升",
+        "effect_3": "医疗"
+    },
+    {
+        "name": "O.B.J.重荷",
+        "star_level": "五星",
+        "type": "双手剑",
+        "effect_1": "力量提升",
+        "effect_2": "生命提升",
+        "effect_3": "效益"
+    },
+    {
+        "name": "大雷斑",
+        "star_level": "六星",
+        "type": "双手剑",
+        "effect_1": "力量提升",
+        "effect_2": "生命提升",
+        "effect_3": "医疗"
+    },
+    {
+        "name": "赫拉芬格",
+        "star_level": "六星",
+        "type": "双手剑",
+        "effect_1": "力量提升",
+        "effect_2": "攻击提升",
+        "effect_3": "迸发"
+    },
+    {
+        "name": "典范",
+        "star_level": "六星",
+        "type": "双手剑",
+        "effect_1": "主能力提升",
+        "effect_2": "攻击提升",
+        "effect_3": "压制"
+    },
+    {
+        "name": "昔日精品",
+        "star_level": "六星",
+        "type": "双手剑",
+        "effect_1": "意志提升",
+        "effect_2": "生命提升",
+        "effect_3": "效益"
+    },
+    {
+        "name": "破碎君王",
+        "star_level": "六星",
+        "type": "双手剑",
+        "effect_1": "力量提升",
+        "effect_2": "暴击率提升",
+        "effect_3": "粉碎"
+    },
+    {
+        "name": "寻路者道标",
+        "star_level": "四星",
+        "type": "长柄武器",
+        "effect_1": "敏捷提升",
+        "effect_2": "攻击提升",
+        "effect_3": "昂扬"
+    },
+    {
+        "name": "天使杀手",
+        "star_level": "四星",
+        "type": "长柄武器",
+        "effect_1": "意志提升",
+        "effect_2": "法术伤害提升",
+        "effect_3": "压制"
+    },
+    {
+        "name": "嵌合正义",
+        "star_level": "五星",
+        "type": "长柄武器",
+        "effect_1": "力量提升",
+        "effect_2": "终结技效率提升",
+        "effect_3": "残暴"
+    },
+    {
+        "name": "O.B.J.尖峰",
+        "star_level": "五星",
+        "type": "长柄武器",
+        "effect_1": "意志提升",
+        "effect_2": "物理伤害提升",
+        "effect_3": "附术"
+    },
+    {
+        "name": "向心之引",
+        "star_level": "五星",
+        "type": "长柄武器",
+        "effect_1": "意志提升",
+        "effect_2": "电磁伤害提升",
+        "effect_3": "压制"
+    },
+    {
+        "name": "负山",
+        "star_level": "六星",
+        "type": "长柄武器",
+        "effect_1": "敏捷提升",
+        "effect_2": "物理伤害提升",
+        "effect_3": "效益"
+    },
+    {
+        "name": "骁勇",
+        "star_level": "六星",
+        "type": "长柄武器",
+        "effect_1": "敏捷提升",
+        "effect_2": "物理伤害提升",
+        "effect_3": "巧技"
+    },
+    {
+        "name": "J.E.T.",
+        "star_level": "六星",
+        "type": "长柄武器",
+        "effect_1": "主能力提升",
+        "effect_2": "攻击提升",
+        "effect_3": "压制"
+    },
+    {
+        "name": "呼啸守卫",
+        "star_level": "四星",
+        "type": "手铳",
+        "effect_1": "智识提升",
+        "effect_2": "攻击提升",
+        "effect_3": "压制"
+    },
+    {
+        "name": "长路",
+        "star_level": "四星",
+        "type": "手铳",
+        "effect_1": "力量提升",
+        "effect_2": "法术伤害提升",
+        "effect_3": "追袭"
+    },
+    {
+        "name": "作品众生",
+        "star_level": "五星",
+        "type": "手铳",
+        "effect_1": "敏捷提升",
+        "effect_2": "法术伤害提升",
+        "effect_3": "附术"
+    },
+    {
+        "name": "O.B.J.迅极",
+        "star_level": "五星",
+        "type": "手铳",
+        "effect_1": "敏捷提升",
+        "effect_2": "终结技效率提升",
+        "effect_3": "迸发"
+    },
+    {
+        "name": "理性告别",
+        "star_level": "五星",
+        "type": "手铳",
+        "effect_1": "力量提升",
+        "effect_2": "灼热伤害提升",
+        "effect_3": "追袭"
+    },
+    {
+        "name": "艺术暴君",
+        "star_level": "六星",
+        "type": "手铳",
+        "effect_1": "智识提升",
+        "effect_2": "暴击率提升",
+        "effect_3": "切骨"
+    },
+    {
+        "name": "领航者",
+        "star_level": "六星",
+        "type": "手铳",
+        "effect_1": "智识提升",
+        "effect_2": "寒冷伤害提升",
+        "effect_3": "附术"
+    },
+    {
+        "name": "楔子",
+        "star_level": "六星",
+        "type": "手铳",
+        "effect_1": "主能力提升",
+        "effect_2": "暴击率提升",
+        "effect_3": "附术"
+    },
+    {
+        "name": "同类相食",
+        "star_level": "六星",
+        "type": "手铳",
+        "effect_1": "主能力提升",
+        "effect_2": "法术伤害提升",
+        "effect_3": "附术"
+    },
+    {
+        "name": "全自动骇新星",
+        "star_level": "四星",
+        "type": "施术单元",
+        "effect_1": "智识提升",
+        "effect_2": "法术伤害提升",
+        "effect_3": "昂扬"
+    },
+    {
+        "name": "荧光雷羽",
+        "star_level": "四星",
+        "type": "施术单元",
+        "effect_1": "意志提升",
+        "effect_2": "攻击提升",
+        "effect_3": "压制"
+    },
+    {
+        "name": "悼亡诗",
+        "star_level": "五星",
+        "type": "施术单元",
+        "effect_1": "智识提升",
+        "effect_2": "攻击提升",
+        "effect_3": "夜幕"
+    },
+    {
+        "name": "莫奈何",
+        "star_level": "五星",
+        "type": "施术单元",
+        "effect_1": "意志提升",
+        "effect_2": "终结技效率提升",
+        "effect_3": "昂扬"
+    },
+    {
+        "name": "迷失荒野",
+        "star_level": "五星",
+        "type": "施术单元",
+        "effect_1": "智识提升",
+        "effect_2": "电磁伤害提升",
+        "effect_3": "附术"
+    },
+    {
+        "name": "布道自由",
+        "star_level": "五星",
+        "type": "施术单元",
+        "effect_1": "意志提升",
+        "effect_2": "治疗效率提升",
+        "effect_3": "医疗"
+    },
+    {
+        "name": "O.B.J.术识",
+        "star_level": "五星",
+        "type": "施术单元",
+        "effect_1": "智识提升",
+        "effect_2": "源石技艺提升",
+        "effect_3": "追袭"
+    },
+    {
+        "name": "使命必达",
+        "star_level": "六星",
+        "type": "施术单元",
+        "effect_1": "意志提升",
+        "effect_2": "终结技效率提升",
+        "effect_3": "追袭"
+    },
+    {
+        "name": "沧溟星梦",
+        "star_level": "六星",
+        "type": "施术单元",
+        "effect_1": "智识提升",
+        "effect_2": "治疗效率提升",
+        "effect_3": "附术"
+    },
+    {
+        "name": "作品蚀迹",
+        "star_level": "六星",
+        "type": "施术单元",
+        "effect_1": "意志提升",
+        "effect_2": "自然伤害提升",
+        "effect_3": "压制"
+    },
+    {
+        "name": "爆破单元",
+        "star_level": "六星",
+        "type": "施术单元",
+        "effect_1": "主能力提升",
+        "effect_2": "源石技艺提升",
+        "effect_3": "迸发"
+    },
+    {
+        "name": "遗忘",
+        "star_level": "六星",
+        "type": "施术单元",
+        "effect_1": "智识提升",
+        "effect_2": "法术伤害提升",
+        "effect_3": "夜幕"
+    },
+    {
+        "name": "骑士精神",
+        "star_level": "六星",
+        "type": "施术单元",
+        "effect_1": "意志提升",
+        "effect_2": "生命提升",
+        "effect_3": "医疗"
+    }
+]
