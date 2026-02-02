@@ -19,14 +19,10 @@ body {
     font-size: 0.9rem;
 }
 
-h2 {
-    color: var(--text-primary);
-    font-weight: 500;
-    margin-bottom: 16px;
-    border-bottom: 2px solid var(--accent);
-    padding-bottom: 6px;
-    display: inline-block;
-    font-size: 1.6rem;
+h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 30px;
 }
 
 /* 输入框基础样式（紧凑型） */
@@ -273,7 +269,7 @@ button:hover {
 button.add-btn {
     background: var(--accent);
     color: #fff;
-    border-color: rgba(74,111,165,0.9);
+    border-color: rgba(74, 111, 165, 0.9);
 }
 
 button.add-btn:hover {
@@ -293,7 +289,7 @@ button.delete-btn {
 button.delete-btn:hover {
     border-color: var(--alert-border);
     color: var(--alert-border);
-    background: rgba(220,53,69,0.06);
+    background: rgba(220, 53, 69, 0.06);
 }
 
 /* 调整 multi-box 中控件按钮的布局与大小，使其与输入区视觉一致 */
