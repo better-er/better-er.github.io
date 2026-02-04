@@ -362,15 +362,16 @@ const App = {
 
                 const top = document.createElement('span');
                 top.className = 'top';
-                top.textContent = tokens1[j] ? tokens1[j].text : '';
+                // 若无内容则填充全角空格作为占位符
+                top.textContent = tokens1[j] ? tokens1[j].text : '　';
                 pairCol.appendChild(top);
 
-                // 逐个追加每个可见变体对应的 token（若没有则显示空）
+                // 逐个追加每个可见变体对应的 token（若没有则显示全角空格）
                 for (let vi = 0; vi < visibleVariants.length; vi++) {
                     const bottom = document.createElement('span');
                     bottom.className = 'bottom';
                     bottom.style.display = 'block';
-                    bottom.textContent = (variantTokens[vi] && variantTokens[vi][j]) ? variantTokens[vi][j].text : '';
+                    bottom.textContent = (variantTokens[vi] && variantTokens[vi][j]) ? variantTokens[vi][j].text : '　';
                     pairCol.appendChild(bottom);
                 }
 
@@ -435,7 +436,9 @@ const App = {
             _applyRatioToTargets(ratio, sourceEl);
 
             // 在下一帧释放锁，允许后续用户滚动继续触发
-            requestAnimationFrame(() => { this._scrollState.isSyncing = false; });
+            requestAnimationFrame(() => {
+                this._scrollState.isSyncing = false;
+            });
         };
 
         // 为已有的变体绑定滚动监听（以防在 bindEvents 之前已加载变体）
@@ -453,7 +456,7 @@ const App = {
         const last = this._scrollState.lastSource;
         if (!last) return;
         this._scrollState.isSyncing = true;
-        const ratio = (function(el) {
+        const ratio = (function (el) {
             const scrollHeight = el.scrollHeight;
             const clientHeight = el.clientHeight;
             const scrollable = Math.max(0, scrollHeight - clientHeight);
@@ -470,7 +473,9 @@ const App = {
             t.scrollTop = Math.round(ratio * tgtScrollable);
         }
 
-        requestAnimationFrame(() => { this._scrollState.isSyncing = false; });
+        requestAnimationFrame(() => {
+            this._scrollState.isSyncing = false;
+        });
     }
 };
 
