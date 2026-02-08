@@ -163,3 +163,31 @@ button {
 .btn-see-all:hover {
     background-color: #7f8c8d;
 }
+
+/* 刻写券模式开关样式 —— 统一风格 */
+.controls label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #555;
+    cursor: pointer;
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    background-color: #fafafa;
+    transition: all 0.2s ease;
+    margin-right: 16px; /* 👈 统一与按钮的间距 */
+}
+
+.controls label:hover {
+    background-color: #f0f0f0;
+    border-color: #ccc;
+}
+
+.controls input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #3498db; /* 统一选中色与标签主色 */
+    cursor: pointer;
+}

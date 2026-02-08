@@ -28,8 +28,16 @@ let weaponsData = [];
 // 武器星级颜色映射（从配置文件加载）
 let weaponColors = {};
 
-// 当前选中属性集合
+// 当前选中属性集合（平铺）
 let selectedAttrs = new Set();
+
+// 便捷：按分类维护选中集合（用于刻写券模式校验）
+let selectedBase = new Set();
+let selectedAdditional = new Set();
+let selectedSkill = new Set();
+
+// 模式开关
+let modeKexie = false;
 
 // 初始化：加载 JSON 并构建界面
 async function init() {
@@ -55,6 +63,7 @@ async function init() {
   const loadingInfoEl = document.getElementById('loading-info');
   loadingInfoEl.textContent = `已加载 ${weaponsData.length} 条武器数据`;
 
+
   // 提取所有唯一属性值（用于自动分类）
   const allAttributes = new Set();
   weaponsData.forEach(w => {
@@ -73,15 +82,36 @@ async function init() {
   renderTags('additional-attributes', ADDITIONAL_ATTRS);
   renderTags('skill-attributes', skillAttrs);
 
+
   // 绑定点击事件（统一处理）
   document.querySelectorAll('.tag').forEach(tag => {
     tag.addEventListener('click', toggleAttribute);
   });
 
+
   // 绑定清空按钮
   document.getElementById('btn-clear').addEventListener('click', clearSelection);
   // 绑定“我就要看”按钮
   document.getElementById('btn-see-all').addEventListener('click', filterWeaponsLoose);
+
+  // 绑定刻写券模式开关
+  document.getElementById('mode-kexie').addEventListener('change', (e) => {
+    modeKexie = e.target.checked;
+    document.querySelectorAll('.tag.selected').forEach(tag => {
+      const attr = tag.getAttribute('data-attr');
+      const cat = tag.getAttribute('data-cat');
+      // Keep flat set in sync with DOM
+      selectedAttrs.add(attr);
+      if (cat === 'base') selectedBase.add(attr);
+      else if (cat === 'additional') selectedAdditional.add(attr);
+      else selectedSkill.add(attr);
+    });
+    updateStatus();
+    // 根据新模式重新执行筛选（保留当前选择）
+    if (modeKexie) filterWeaponsKexie();
+    else filterWeapons();
+  });
+
 
   // 初次渲染状态
   updateStatus();
@@ -97,6 +127,9 @@ function renderTags(containerId, attributes) {
     tag.className = 'tag';
     tag.textContent = attr;
     tag.setAttribute('data-attr', attr);
+    // 标注所属分类，便于后续判断
+    const cat = containerId === 'base-attributes' ? 'base' : (containerId === 'additional-attributes' ? 'additional' : 'skill');
+    tag.setAttribute('data-cat', cat);
     container.appendChild(tag);
   });
 }
@@ -104,15 +137,29 @@ function renderTags(containerId, attributes) {
 // 切换选中状态
 function toggleAttribute(e) {
   const attr = e.currentTarget.getAttribute('data-attr');
+  const cat = e.currentTarget.getAttribute('data-cat');
+
+  // 如果刻写券模式下，需要在选择时进行分类约束（但允许先选，状态提示会告知）
   if (selectedAttrs.has(attr)) {
+    // 取消选中
     selectedAttrs.delete(attr);
     e.currentTarget.classList.remove('selected');
+    // 从分类集合移除
+    if (cat === 'base') selectedBase.delete(attr);
+    else if (cat === 'additional') selectedAdditional.delete(attr);
+    else selectedSkill.delete(attr);
   } else {
+    // 选中时：如果不是刻写券模式，直接添加；若为刻写券模式，也允许添加，但 updateStatus 会提示是否超选
     selectedAttrs.add(attr);
     e.currentTarget.classList.add('selected');
+    if (cat === 'base') selectedBase.add(attr);
+    else if (cat === 'additional') selectedAdditional.add(attr);
+    else selectedSkill.add(attr);
   }
   updateStatus();
-  filterWeapons();
+  // 根据当前模式调用不同的筛选逻辑
+  if (modeKexie) filterWeaponsKexie();
+  else filterWeapons();
 }
 
 // 更新状态提示 & 控制按钮显示
@@ -121,26 +168,47 @@ function updateStatus() {
   const seeAllBtn = document.getElementById('btn-see-all');
   const count = selectedAttrs.size;
 
-  if (count === 0) {
-    statusEl.textContent = '请选择恰好 3 个属性进行筛选';
-    seeAllBtn.style.display = 'none';
-  } else if (count === 3) {
-    statusEl.textContent = `已选中 ${count} 个属性：${[...selectedAttrs].join('、')}`;
-    seeAllBtn.style.display = 'none';
+  if (!modeKexie) {
+    if (count === 0) {
+      statusEl.textContent = '请选择恰好 3 个属性进行筛选';
+      seeAllBtn.style.display = 'none';
+    } else if (count === 3) {
+      statusEl.textContent = `已选中 ${count} 个属性：${[...selectedAttrs].join('、')}`;
+      seeAllBtn.style.display = 'none';
+    } else {
+      statusEl.textContent = `已选中 ${count} 个属性，请再选 ${3 - count} 个以匹配`;
+      seeAllBtn.style.display = 'inline-block';
+    }
   } else {
-    statusEl.textContent = `已选中 ${count} 个属性，请再选 ${3 - count} 个以匹配`;
-    seeAllBtn.style.display = 'inline-block';
+    // 刻写券模式：基础属性需恰好 3 个，额外从（附加+技能）里选 1 个
+    const baseCount = selectedBase.size;
+    const extraCount = selectedAdditional.size + selectedSkill.size;
+
+    // 状态文本更详细提示分类情况
+    if (baseCount === 0 && extraCount === 0) {
+      statusEl.textContent = '刻写券模式：请选择基础属性 3 个 +（附加 或 技能）1 个';
+      seeAllBtn.style.display = 'none';
+    } else {
+      statusEl.textContent = `刻写券模式：基础 ${baseCount}/3，附加/技能 ${extraCount}/1`;
+      // 当分类满足条件时隐藏“我就要看”按钮（会自动筛选），否则展示宽松按钮以允许查看部分匹配的结果
+      if (baseCount === 3 && extraCount === 1) seeAllBtn.style.display = 'none';
+      else seeAllBtn.style.display = 'inline-block';
+    }
   }
 }
 
 // 清空所有选中
 function clearSelection() {
   selectedAttrs.clear();
+  selectedBase.clear();
+  selectedAdditional.clear();
+  selectedSkill.clear();
   document.querySelectorAll('.tag').forEach(tag => {
     tag.classList.remove('selected');
   });
   updateStatus();
-  filterWeapons();
+  if (modeKexie) filterWeaponsKexie();
+  else filterWeapons();
 }
 
 // 标准筛选：仅当选中 3 个时触发（精确匹配）
@@ -176,6 +244,38 @@ function filterWeaponsLoose() {
     const weaponSet = new Set([w.effect_1, w.effect_2, w.effect_3]);
     // 匹配规则：选中的每个属性都必须出现在武器的三个属性中
     return [...target].every(attr => weaponSet.has(attr));
+  });
+
+  renderResults(filtered);
+}
+
+// 新：刻写券模式筛选逻辑
+// 规则：基础属性指定恰好 3 个（selectedBase），附加或技能属性合计指定恰好 1 个（selectedAdditional 或 selectedSkill）
+// 筛选出满足：武器的属性一是基础属性三中的任意一个，属性二或属性三是所选的额外属性（附加或技能）
+function filterWeaponsKexie() {
+  const resultsEl = document.getElementById('results');
+  resultsEl.innerHTML = '';
+
+  // 只有当满足 精确 3 基础 + 1 额外 时才做严格筛选
+  if (selectedBase.size !== 3 || (selectedAdditional.size + selectedSkill.size) !== 1) {
+    return;
+  }
+
+  // 目标集合
+  const baseSet = new Set(selectedBase);
+  // 合并附加+技能集合（只有1个）
+  const extras = [...selectedAdditional, ...selectedSkill];
+  const extraAttr = extras[0];
+
+  const filtered = weaponsData.filter(w => {
+    // 属性一必须是三个基础属性之一
+    const attr1 = w.effect_1;
+    const attr2 = w.effect_2;
+    const attr3 = w.effect_3;
+    const cond1 = baseSet.has(attr1);
+    // 属性二或属性三其中之一必须等于选中的额外属性
+    const cond2 = (attr2 === extraAttr) || (attr3 === extraAttr);
+    return cond1 && cond2;
   });
 
   renderResults(filtered);
