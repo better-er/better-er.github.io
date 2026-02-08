@@ -1,0 +1,248 @@
+// 预定义分类（仅用于界面组织）
+const BASE_ATTRS = [
+  "敏捷提升",
+  "力量提升",
+  "意志提升",
+  "智识提升",
+  "主能力提升"
+];
+
+const ADDITIONAL_ATTRS = [
+  "生命提升",
+  "攻击提升",
+  "物理伤害提升",
+  "灼热伤害提升",
+  "寒冷伤害提升",
+  "自然伤害提升",
+  "电磁伤害提升",
+  "法术伤害提升",
+  "暴击率提升",
+  "源石技艺提升",
+  "治疗效率提升",
+  "终结技效率提升"
+];
+
+// 所有武器数据
+let weaponsData = [];
+
+// 武器星级颜色映射（从配置文件加载）
+let weaponColors = {};
+
+// 当前选中属性集合
+let selectedAttrs = new Set();
+
+// 初始化：加载 JSON 并构建界面
+async function init() {
+  const response = await fetch('assets/json/weapons.json');
+  if (!response.ok) {
+    throw new Error(`无法加载 weapons.json: ${response.status}`);
+  }
+  weaponsData = await response.json();
+
+  // 读取武器星级颜色配置（可选，失败时使用默认色）
+  try {
+    const colorResp = await fetch('assets/json/weapon_colors.json');
+    if (colorResp.ok) {
+      weaponColors = await colorResp.json();
+    } else {
+      weaponColors = {};
+    }
+  } catch (e) {
+    weaponColors = {};
+  }
+
+  // 更新加载信息
+  const loadingInfoEl = document.getElementById('loading-info');
+  loadingInfoEl.textContent = `已加载 ${weaponsData.length} 条武器数据`;
+
+  // 提取所有唯一属性值（用于自动分类）
+  const allAttributes = new Set();
+  weaponsData.forEach(w => {
+    allAttributes.add(w.effect_1);
+    allAttributes.add(w.effect_2);
+    allAttributes.add(w.effect_3);
+  });
+
+  // 自动分类：技能属性 = 所有属性 - 基础 - 附加
+  const skillAttrs = [...allAttributes].filter(attr =>
+    !BASE_ATTRS.includes(attr) && !ADDITIONAL_ATTRS.includes(attr)
+  );
+
+  // 渲染三组标签
+  renderTags('base-attributes', BASE_ATTRS);
+  renderTags('additional-attributes', ADDITIONAL_ATTRS);
+  renderTags('skill-attributes', skillAttrs);
+
+  // 绑定点击事件（统一处理）
+  document.querySelectorAll('.tag').forEach(tag => {
+    tag.addEventListener('click', toggleAttribute);
+  });
+
+  // 绑定清空按钮
+  document.getElementById('btn-clear').addEventListener('click', clearSelection);
+  // 绑定“我就要看”按钮
+  document.getElementById('btn-see-all').addEventListener('click', filterWeaponsLoose);
+
+  // 初次渲染状态
+  updateStatus();
+  filterWeapons();
+}
+
+// 渲染一组标签
+function renderTags(containerId, attributes) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  attributes.forEach(attr => {
+    const tag = document.createElement('span');
+    tag.className = 'tag';
+    tag.textContent = attr;
+    tag.setAttribute('data-attr', attr);
+    container.appendChild(tag);
+  });
+}
+
+// 切换选中状态
+function toggleAttribute(e) {
+  const attr = e.currentTarget.getAttribute('data-attr');
+  if (selectedAttrs.has(attr)) {
+    selectedAttrs.delete(attr);
+    e.currentTarget.classList.remove('selected');
+  } else {
+    selectedAttrs.add(attr);
+    e.currentTarget.classList.add('selected');
+  }
+  updateStatus();
+  filterWeapons();
+}
+
+// 更新状态提示 & 控制按钮显示
+function updateStatus() {
+  const statusEl = document.getElementById('status');
+  const seeAllBtn = document.getElementById('btn-see-all');
+  const count = selectedAttrs.size;
+
+  if (count === 0) {
+    statusEl.textContent = '请选择恰好 3 个属性进行筛选';
+    seeAllBtn.style.display = 'none';
+  } else if (count === 3) {
+    statusEl.textContent = `已选中 ${count} 个属性：${[...selectedAttrs].join('、')}`;
+    seeAllBtn.style.display = 'none';
+  } else {
+    statusEl.textContent = `已选中 ${count} 个属性，请再选 ${3 - count} 个以匹配`;
+    seeAllBtn.style.display = 'inline-block';
+  }
+}
+
+// 清空所有选中
+function clearSelection() {
+  selectedAttrs.clear();
+  document.querySelectorAll('.tag').forEach(tag => {
+    tag.classList.remove('selected');
+  });
+  updateStatus();
+  filterWeapons();
+}
+
+// 标准筛选：仅当选中 3 个时触发（精确匹配）
+function filterWeapons() {
+  const resultsEl = document.getElementById('results');
+  resultsEl.innerHTML = '';
+
+  if (selectedAttrs.size !== 3) {
+    return; // 仅当满3项时才做精确匹配
+  }
+
+  const target = new Set(selectedAttrs);
+  const filtered = weaponsData.filter(w => {
+    const weaponSet = new Set([w.effect_1, w.effect_2, w.effect_3]);
+    return weaponSet.size === 3 &&
+      weaponSet.size === target.size &&
+      [...weaponSet].every(e => target.has(e)) &&
+      [...target].every(e => weaponSet.has(e));
+  });
+
+  renderResults(filtered);
+}
+
+// 宽松筛选：当前选中多少个，就匹配多少个（任意数量）
+function filterWeaponsLoose() {
+  const resultsEl = document.getElementById('results');
+  resultsEl.innerHTML = '';
+
+  if (selectedAttrs.size === 0) return;
+
+  const target = new Set(selectedAttrs);
+  const filtered = weaponsData.filter(w => {
+    const weaponSet = new Set([w.effect_1, w.effect_2, w.effect_3]);
+    // 匹配规则：选中的每个属性都必须出现在武器的三个属性中
+    return [...target].every(attr => weaponSet.has(attr));
+  });
+
+  renderResults(filtered);
+}
+
+// 公共渲染函数：避免重复代码
+function renderResults(filtered) {
+  const resultsEl = document.getElementById('results');
+  if (filtered.length === 0) {
+    resultsEl.innerHTML = `<div class="no-results">未找到符合所选属性的武器</div>`;
+    return;
+  }
+
+  resultsEl.innerHTML = '';
+
+  // 助手：将各种格式的星级文本解析为数字（支持中文数字与阿拉伯数字）
+  function parseStarLevel(s) {
+    if (typeof s === 'number') return s;
+    if (!s) return 0;
+    const str = String(s).trim();
+    // 先尝试提取阿拉伯数字
+    const m = str.match(/(\d+)/);
+    if (m) return Number(m[1]);
+    // 中文数字映射
+    const map = {'一': 1, '二': 2, '三': 3, '四': 4, '五': 5, '六': 6, '七': 7, '八': 8, '九': 9, '十': 10};
+    for (const ch of Object.keys(map)) {
+      if (str.includes(ch)) return map[ch];
+    }
+    return 0;
+  }
+
+  // 按星级从高到低排序，确保高星级显示在上面
+  filtered.sort((a, b) => parseStarLevel(b.star_level) - parseStarLevel(a.star_level));
+
+  filtered.forEach(w => {
+    const card = document.createElement('div');
+    card.className = 'weapon-card';
+
+    // 根据星级设置边框颜色（配置文件中查找，失败使用灰色）
+    const color = weaponColors[String(w.star_level)];
+    card.style.border = `2px solid ${color}`;
+    card.style.borderRadius = '6px';
+    card.style.padding = '8px';
+
+    const nameEl = document.createElement('div');
+    nameEl.className = 'weapon-name';
+    nameEl.textContent = w.name;
+
+    const typeEl = document.createElement('div');
+    typeEl.className = 'weapon-type';
+    typeEl.textContent = `【${w.star_level} ${w.type}】`;
+
+    const effectsEl = document.createElement('div');
+    effectsEl.className = 'weapon-detail';
+    effectsEl.textContent = `属性一：${w.effect_1} | 属性二：${w.effect_2} | 属性三：${w.effect_3}`;
+
+    card.appendChild(nameEl);
+    card.appendChild(typeEl);
+    card.appendChild(effectsEl);
+
+    resultsEl.appendChild(card);
+  });
+}
+
+// 启动
+init().catch(err => {
+  document.getElementById('results').innerHTML = `
+                <div class="no-results">加载失败：${err.message}</div>
+            `;
+});
