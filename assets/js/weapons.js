@@ -39,6 +39,22 @@ let selectedSkill = new Set();
 // 模式开关
 let modeKexie = false;
 
+// 助手：将各种格式的星级文本解析为数字（支持中文数字与阿拉伯数字）
+function parseStarLevel(s) {
+  if (typeof s === 'number') return s;
+  if (!s) return 0;
+  const str = String(s).trim();
+  // 先尝试提取阿拉伯数字
+  const m = str.match(/(\d+)/);
+  if (m) return Number(m[1]);
+  // 中文数字映射
+  const map = {'一': 1, '二': 2, '三': 3, '四': 4, '五': 5, '六': 6, '七': 7, '八': 8, '九': 9, '十': 10};
+  for (const ch of Object.keys(map)) {
+    if (str.includes(ch)) return map[ch];
+  }
+  return 0;
+}
+
 // 初始化：加载 JSON 并构建界面
 async function init() {
   const response = await fetch('assets/json/weapons.json');
@@ -93,6 +109,8 @@ async function init() {
   document.getElementById('btn-clear').addEventListener('click', clearSelection);
   // 绑定“我就要看”按钮
   document.getElementById('btn-see-all').addEventListener('click', filterWeaponsLoose);
+  // 绑定“技能相同的武器”按钮
+  document.getElementById('btn-same-skills').addEventListener('click', showSameSkillsWeapons);
 
   // 绑定刻写券模式开关
   document.getElementById('mode-kexie').addEventListener('change', (e) => {
@@ -166,7 +184,15 @@ function toggleAttribute(e) {
 function updateStatus() {
   const statusEl = document.getElementById('status');
   const seeAllBtn = document.getElementById('btn-see-all');
+  const sameSkillsBtn = document.getElementById('btn-same-skills');
   const count = selectedAttrs.size;
+
+  // “技能相同的武器”按钮仅在未选择任何词条时显示
+  if (count === 0) {
+    sameSkillsBtn.style.display = 'inline-block';
+  } else {
+    sameSkillsBtn.style.display = 'none';
+  }
 
   if (!modeKexie) {
     if (count === 0) {
@@ -281,6 +307,73 @@ function filterWeaponsKexie() {
   renderResults(filtered);
 }
 
+// 新：展示技能相同的武器
+function showSameSkillsWeapons() {
+  const resultsEl = document.getElementById('results');
+  resultsEl.innerHTML = '';
+
+  const skillGroups = new Map();
+
+  weaponsData.forEach(w => {
+    // 属性排序以保证组合一致性
+    const effects = [w.effect_1, w.effect_2, w.effect_3].sort().join(',');
+    if (!skillGroups.has(effects)) {
+      skillGroups.set(effects, []);
+    }
+    skillGroups.get(effects).push(w);
+  });
+
+  const duplicateGroups = [...skillGroups.values()].filter(group => group.length > 1);
+
+  if (duplicateGroups.length === 0) {
+    resultsEl.innerHTML = `<div class="no-results">未发现技能组合完全相同的武器</div>`;
+    return;
+  }
+
+  duplicateGroups.forEach(group => {
+    const groupHeader = document.createElement('div');
+    groupHeader.style.cssText = 'margin-top: 20px; padding: 10px; background: #e9ecef; border-left: 4px solid #3498db; font-weight: bold; color: #2c3e50;';
+    const effects = [group[0].effect_1, group[0].effect_2, group[0].effect_3].join(' + ');
+    groupHeader.textContent = `技能组合：${effects}`;
+    resultsEl.appendChild(groupHeader);
+
+    // 复用 renderResults 的核心逻辑，但不清空容器
+    renderWeaponsToContainer(group, resultsEl);
+  });
+}
+
+// 辅助函数：渲染武器列表到指定容器
+function renderWeaponsToContainer(weapons, container) {
+  weapons.sort((a, b) => parseStarLevel(b.star_level) - parseStarLevel(a.star_level));
+
+  weapons.forEach(w => {
+    const card = document.createElement('div');
+    card.className = 'weapon-card';
+    const color = weaponColors[String(w.star_level)] || '#ddd';
+    card.style.border = `2px solid ${color}`;
+    card.style.borderRadius = '6px';
+    card.style.padding = '8px';
+    card.style.marginTop = '10px';
+
+    const nameEl = document.createElement('div');
+    nameEl.className = 'weapon-name';
+    nameEl.textContent = w.name;
+
+    const typeEl = document.createElement('div');
+    typeEl.className = 'weapon-type';
+    typeEl.textContent = `【${w.star_level} ${w.type}】`;
+
+    const effectsEl = document.createElement('div');
+    effectsEl.className = 'weapon-detail';
+    effectsEl.textContent = `属性一：${w.effect_1} | 属性二：${w.effect_2} | 属性三：${w.effect_3}`;
+
+    card.appendChild(nameEl);
+    card.appendChild(typeEl);
+    card.appendChild(effectsEl);
+    container.appendChild(card);
+  });
+}
+
 // 公共渲染函数：避免重复代码
 function renderResults(filtered) {
   const resultsEl = document.getElementById('results');
@@ -291,22 +384,6 @@ function renderResults(filtered) {
 
   resultsEl.innerHTML = '';
 
-  // 助手：将各种格式的星级文本解析为数字（支持中文数字与阿拉伯数字）
-  function parseStarLevel(s) {
-    if (typeof s === 'number') return s;
-    if (!s) return 0;
-    const str = String(s).trim();
-    // 先尝试提取阿拉伯数字
-    const m = str.match(/(\d+)/);
-    if (m) return Number(m[1]);
-    // 中文数字映射
-    const map = {'一': 1, '二': 2, '三': 3, '四': 4, '五': 5, '六': 6, '七': 7, '八': 8, '九': 9, '十': 10};
-    for (const ch of Object.keys(map)) {
-      if (str.includes(ch)) return map[ch];
-    }
-    return 0;
-  }
-
   // 按星级从高到低排序，确保高星级显示在上面
   filtered.sort((a, b) => parseStarLevel(b.star_level) - parseStarLevel(a.star_level));
 
@@ -315,7 +392,7 @@ function renderResults(filtered) {
     card.className = 'weapon-card';
 
     // 根据星级设置边框颜色（配置文件中查找，失败使用灰色）
-    const color = weaponColors[String(w.star_level)];
+    const color = weaponColors[String(w.star_level)] || '#ddd';
     card.style.border = `2px solid ${color}`;
     card.style.borderRadius = '6px';
     card.style.padding = '8px';

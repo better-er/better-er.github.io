@@ -148,7 +148,8 @@ button {
     padding: 60px;
 }
 
-.btn-see-all {
+.btn-see-all,
+.btn-same-skills {
     margin-left: 16px;
     padding: 12px 24px;
     font-size: 16px;
@@ -160,7 +161,8 @@ button {
     color: white;
 }
 
-.btn-see-all:hover {
+.btn-see-all:hover,
+.btn-same-skills:hover {
     background-color: #7f8c8d;
 }
 
