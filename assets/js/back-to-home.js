@@ -147,15 +147,6 @@
     if (bodyStyle.minHeight === 'auto') {
       document.body.style.minHeight = '100vh';
     }
-    // 让主要内容容器（第一个子元素）可以伸缩
-    const firstChild = document.body.children[0];
-    if (firstChild && firstChild !== contactBar) {
-      // 排除返回按钮（如果有）
-      const nonContactChildren = Array.from(document.body.children).filter(child => child !== contactBar);
-      if (nonContactChildren.length > 0) {
-        nonContactChildren[0].style.flex = '1';
-      }
-    }
   }
   console.log('联系栏已直接添加到 body');
 
