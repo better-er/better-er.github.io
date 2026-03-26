@@ -1,18 +1,19 @@
 // assets/js/back-to-home.js
 
 (function () {
-  // 只在非主页页面显示“返回首页”按钮
+  // 判断是否是主页
   const isHome = window.location.pathname === '/index.html' || window.location.pathname === '/';
-  if (isHome) return;
 
-  // 创建返回按钮
-  const backButton = document.createElement('a');
-  backButton.href = '/';
-  backButton.textContent = '返回首页';
-  backButton.className = 'back-to-home';
+  // 只在非主页页面显示"返回首页"按钮
+  if (!isHome) {
+    // 创建返回按钮
+    const backButton = document.createElement('a');
+    backButton.href = '/';
+    backButton.textContent = '返回首页';
+    backButton.className = 'back-to-home';
 
-  // 添加样式（直接内联，避免外部 CSS 加载延迟）
-  const style = `
+    // 添加样式（直接内联，避免外部 CSS 加载延迟）
+    const style = `
         position: fixed;
         top: 24px;
         left: 24px;
@@ -37,52 +38,53 @@
         font-family: inherit; /* 统一字体 */
     `;
 
-  backButton.setAttribute('style', style);
+    backButton.setAttribute('style', style);
 
-  // 悬停效果：轻微上浮，背景变透，阴影增强
-  backButton.addEventListener('mouseenter', () => {
-    backButton.style.transform = 'translateY(-3px)';
-    backButton.style.background = 'rgba(255, 255, 255, 0.9)';
-    backButton.style.boxShadow = '0 10px 28px rgba(0, 0, 0, 0.08)';
-  });
+    // 悬停效果：轻微上浮，背景变透，阴影增强
+    backButton.addEventListener('mouseenter', () => {
+      backButton.style.transform = 'translateY(-3px)';
+      backButton.style.background = 'rgba(255, 255, 255, 0.9)';
+      backButton.style.boxShadow = '0 10px 28px rgba(0, 0, 0, 0.08)';
+    });
 
-  backButton.addEventListener('mouseleave', () => {
-    backButton.style.transform = 'translateY(0)';
-    backButton.style.background = 'rgba(255, 255, 255, 0.8)';
-    backButton.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.05)';
-  });
+    backButton.addEventListener('mouseleave', () => {
+      backButton.style.transform = 'translateY(0)';
+      backButton.style.background = 'rgba(255, 255, 255, 0.8)';
+      backButton.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.05)';
+    });
 
-  // 点击反馈：轻微压下
-  backButton.addEventListener('mousedown', () => {
-    backButton.style.transform = 'translateY(1px)';
-    backButton.style.boxShadow = '0 3px 12px rgba(0, 0, 0, 0.05)';
-  });
+    // 点击反馈：轻微压下
+    backButton.addEventListener('mousedown', () => {
+      backButton.style.transform = 'translateY(1px)';
+      backButton.style.boxShadow = '0 3px 12px rgba(0, 0, 0, 0.05)';
+    });
 
-  backButton.addEventListener('mouseup', () => {
-    backButton.style.transform = 'translateY(-3px)';
-    backButton.style.boxShadow = '0 10px 28px rgba(0, 0, 0, 0.08)';
-  });
+    backButton.addEventListener('mouseup', () => {
+      backButton.style.transform = 'translateY(-3px)';
+      backButton.style.boxShadow = '0 10px 28px rgba(0, 0, 0, 0.08)';
+    });
 
-  // 添加图标（Unicode 箭头 + 平滑过渡）
-  const icon = document.createElement('span');
-  icon.innerHTML = '←';
-  icon.style.fontSize = '18px';
-  icon.style.opacity = '0.8';
-  icon.style.transition = 'opacity 0.2s';
-  backButton.prepend(icon);
-
-  // 悬停时图标变亮
-  backButton.addEventListener('mouseenter', () => {
-    icon.style.opacity = '1';
-  });
-  backButton.addEventListener('mouseleave', () => {
+    // 添加图标（Unicode 箭头 + 平滑过渡）
+    const icon = document.createElement('span');
+    icon.innerHTML = '←';
+    icon.style.fontSize = '18px';
     icon.style.opacity = '0.8';
-  });
+    icon.style.transition = 'opacity 0.2s';
+    backButton.prepend(icon);
 
-  // 插入页面顶部
-  document.body.insertBefore(backButton, document.body.firstChild)
+    // 悬停时图标变亮
+    backButton.addEventListener('mouseenter', () => {
+      icon.style.opacity = '1';
+    });
+    backButton.addEventListener('mouseleave', () => {
+      icon.style.opacity = '0.8';
+    });
 
-  // ==================== 新增：底部联系方式栏（专业简约风格）====================
+    // 插入页面顶部
+    document.body.insertBefore(backButton, document.body.firstChild);
+  }
+
+  // ==================== 底部联系方式栏（主页和子页面都显示）====================
 
   const contactBar = document.createElement('div');
   contactBar.className = 'contact-bar';
@@ -112,6 +114,12 @@
         </a>
     `;
 
+  // 设置联系栏样式，使其不受父容器 flex 布局影响
+  contactBar.style.width = '100%';
+  contactBar.style.position = 'relative';
+  contactBar.style.flexShrink = '0';
+  contactBar.style.marginTop = 'auto'; // 自动推到底部
+
   // 让联系栏在正常文档流中，底部留出空间，不遮挡内容
   contactBar.style.marginTop = '24px'; // 视觉留白，与顶部按钮对称
 
@@ -129,24 +137,52 @@
     contactLink.style.boxShadow = '0 -6px 20px rgba(0, 0, 0, 0.03)';
   });
 
-  // 设置页面底部预留空间（关键！）
-  const body = document.body;
-  const defaultHeight = 60; // 预估高度，避免初始为 0
-  body.style.paddingBottom = defaultHeight + 24 + 'px'; // padding + margin
+  // 直接添加到 body
+  document.body.appendChild(contactBar);
+  const bodyStyle = window.getComputedStyle(document.body);
+  if (bodyStyle.display === 'flex') {
+    if (bodyStyle.flexDirection !== 'column') {
+      document.body.style.flexDirection = 'column';
+    }
+    if (bodyStyle.minHeight === 'auto') {
+      document.body.style.minHeight = '100vh';
+    }
+    // 让主要内容容器（第一个子元素）可以伸缩
+    const firstChild = document.body.children[0];
+    if (firstChild && firstChild !== contactBar) {
+      // 排除返回按钮（如果有）
+      const nonContactChildren = Array.from(document.body.children).filter(child => child !== contactBar);
+      if (nonContactChildren.length > 0) {
+        nonContactChildren[0].style.flex = '1';
+      }
+    }
+  }
+  console.log('联系栏已直接添加到 body');
 
   // 页面加载完成后，动态修正高度（应对字体渲染延迟）
+  const adjustPadding = () => {
+    const height = contactBar.offsetHeight || 60;
+    document.body.style.paddingBottom = height + 24 + 'px';
+  };
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      const height = contactBar.offsetHeight || defaultHeight;
-      body.style.paddingBottom = height + 24 + 'px';
-    });
+    document.addEventListener('DOMContentLoaded', adjustPadding);
   } else {
-    // 页面已加载，立即修正
-    const height = contactBar.offsetHeight || defaultHeight;
-    body.style.paddingBottom = height + 24 + 'px';
+    adjustPadding();
   }
 
-  // 插入页面最底部
-  document.body.appendChild(contactBar);
+  // 监听窗口大小变化，重新计算 padding
+  window.addEventListener('resize', adjustPadding);
+
+  // 使用 MutationObserver 监听联系栏内容变化（如字体加载导致高度变化）
+  if (window.MutationObserver) {
+    const observer = new MutationObserver(adjustPadding);
+    observer.observe(contactBar, {
+      attributes: true,
+      childList: true,
+      subtree: true,
+      attributeFilter: ['style', 'class']
+    });
+  }
 
 })();
