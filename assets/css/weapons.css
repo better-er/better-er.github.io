@@ -21,6 +21,17 @@ h1 {
     margin-bottom: 30px;
 }
 
+/* 轻量、弱提示样式 —— 用于更新时间等辅助手势 */
+.update-time {
+    text-align: center;
+    color: #8a8f94; /* 低对比灰色，弱提示 */
+    font-size: 13px; /* 较小字体 */
+    margin-top: 6px; /* 与标题保持适度间距 */
+    margin-bottom: 10px;
+    line-height: 1;
+    opacity: 0.95;
+}
+
 .loading-info {
     text-align: center;
     color: #666;
