@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8"/>
+    <title>异星工厂蓝图</title>
+    <script defer src="/assets/js/back-to-home.js"></script>
+    <link rel="stylesheet" href="assets/css/blueprint.css">
+</head>
+<body>
+<div class="container">
+    <h2>异星工厂蓝图</h2>
+    <div class="desc">点击文件名复制蓝图字符串，点击「下载」可保存为本地文件。</div>
+
+    <div class="file-grid" id="fileGrid">
+        <div class="file" data-path="蓝图/安全到达破碎星球.txt">
+            <div class="icon">🏭</div>
+            <div class="meta">
+                <div class="filename">安全到达破碎星球</div>
+                <div class="type">Factorio 蓝图</div>
+            </div>
+            <div class="actions">
+                <a class="btn copy-btn">复制</a>
+                <a class="btn download-btn" href="蓝图/安全到达破碎星球.txt" download>下载</a>
+            </div>
+        </div>
+        <div class="file" data-path="蓝图/传说铁by电池.txt">
+            <div class="icon">🏭</div>
+            <div class="meta">
+                <div class="filename">传说铁by电池</div>
+                <div class="type">Factorio 蓝图</div>
+            </div>
+            <div class="actions">
+                <a class="btn copy-btn">复制</a>
+                <a class="btn download-btn" href="蓝图/传说铁by电池.txt" download>下载</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <a href="index.html">返回首页</a>
+    </div>
+</div>
+
+<script>
+(async function() {
+    // 预先加载所有蓝图文件内容
+    const fileMap = {};
+    const fileEls = document.querySelectorAll('.file');
+    for (const el of fileEls) {
+        const path = el.dataset.path;
+        try {
+            const resp = await fetch(path);
+            fileMap[path] = await resp.text();
+        } catch (e) {
+            console.error('加载失败:', path, e);
+        }
+    }
+
+    // 复制按钮逻辑
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const fileEl = this.closest('.file');
+            const path = fileEl.dataset.path;
+            const text = fileMap[path];
+            if (!text) return;
+            navigator.clipboard.writeText(text).then(() => {
+                const orig = this.textContent;
+                this.textContent = '已复制 ✓';
+                setTimeout(() => this.textContent = orig, 1500);
+            }).catch(() => {
+                // 降级方案：创建临时 textarea
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                const orig = this.textContent;
+                this.textContent = '已复制 ✓';
+                setTimeout(() => this.textContent = orig, 1500);
+            });
+        });
+    });
+})();
+</script>
+</body>
+</html>
