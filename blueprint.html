@@ -2,16 +2,70 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8"/>
-    <title>蓝图 &amp; 离线小工具</title>
+    <title>小工具集</title>
     <script defer src="/assets/js/back-to-home.js"></script>
     <link rel="stylesheet" href="assets/css/blueprint.css">
 </head>
 <body>
 <div class="container">
-    <h2>蓝图 &amp; 离线小工具</h2>
-    <div class="desc">蓝图点击「复制」复制字符串，SV 脚本点击文件名在浏览器中打开，均可下载保存到本地。</div>
+    <h2>小工具集</h2>
+    <div class="desc">油猴脚本点击「前往」跳转 Greasy Fork，蓝图点击「复制」复制字符串，均可下载保存到本地。</div>
 
     <div class="file-grid" id="fileGrid">
+        <!-- ====== Greasy Fork 脚本 ====== -->
+        <div class="file">
+            <div class="icon">📜</div>
+            <div class="meta">
+                <div class="filename">百度网盘PDF不限速下载150M</div>
+                <div class="type">Greasy Fork</div>
+            </div>
+            <div class="actions">
+                <a class="btn" href="https://greasyfork.org/zh-CN/scripts/554213" target="_blank" rel="noopener">前往</a>
+            </div>
+        </div>
+        <div class="file">
+            <div class="icon">📜</div>
+            <div class="meta">
+                <div class="filename">干掉b站写评论时的指定表情包</div>
+                <div class="type">Greasy Fork</div>
+            </div>
+            <div class="actions">
+                <a class="btn" href="https://greasyfork.org/zh-CN/scripts/521297" target="_blank" rel="noopener">前往</a>
+            </div>
+        </div>
+        <div class="file">
+            <div class="icon">📜</div>
+            <div class="meta">
+                <div class="filename">噼里啪啦吞评申诉助手</div>
+                <div class="type">Greasy Fork</div>
+            </div>
+            <div class="actions">
+                <a class="btn" href="https://greasyfork.org/zh-CN/scripts/553381" target="_blank" rel="noopener">前往</a>
+            </div>
+        </div>
+        <div class="file">
+            <div class="icon">📜</div>
+            <div class="meta">
+                <div class="filename">屏蔽B站快捷键（不影响输入框）</div>
+                <div class="type">Greasy Fork</div>
+            </div>
+            <div class="actions">
+                <a class="btn" href="https://greasyfork.org/zh-CN/scripts/564831" target="_blank" rel="noopener">前往</a>
+            </div>
+        </div>
+
+        <!-- ====== Synthesizer V 脚本 ====== -->
+        <div class="file" data-path="离线小工具/sv_歌词-粘贴所选音符歌词(保留-+，按字符隔开).js">
+            <div class="icon">🎵</div>
+            <div class="meta">
+                <div class="filename">sv_歌词-粘贴所选音符歌词(保留-+，按字符隔开).js</div>
+                <div class="type">Synthesizer V 脚本</div>
+            </div>
+            <div class="actions">
+                <a class="btn download-btn" href="离线小工具/sv_歌词-粘贴所选音符歌词(保留-+，按字符隔开).js" download>下载</a>
+            </div>
+        </div>
+
         <!-- ====== Factorio 蓝图 ====== -->
         <div class="file" data-path="蓝图/安全到达破碎星球.txt">
             <div class="icon">🏭</div>
@@ -33,18 +87,6 @@
             <div class="actions">
                 <a class="btn copy-btn">复制</a>
                 <a class="btn download-btn" href="蓝图/传说铁by电池.txt" download>下载</a>
-            </div>
-        </div>
-
-        <!-- ====== Synthesizer V 脚本 ====== -->
-        <div class="file" data-path="离线小工具/sv_歌词-粘贴所选音符歌词(保留-+，按字符隔开).js">
-            <div class="icon">🎵</div>
-            <div class="meta">
-                <div class="filename">sv_歌词-粘贴所选音符歌词(保留-+，按字符隔开).js</div>
-                <div class="type">Synthesizer V 脚本</div>
-            </div>
-            <div class="actions">
-                <a class="btn download-btn" href="离线小工具/sv_歌词-粘贴所选音符歌词(保留-+，按字符隔开).js" download>下载</a>
             </div>
         </div>
     </div>
