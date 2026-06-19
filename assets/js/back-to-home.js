@@ -8,7 +8,7 @@
   if (!isHome) {
     // 创建返回按钮
     const backButton = document.createElement('a');
-    backButton.href = '/';
+    backButton.href = 'index.html';
     backButton.textContent = '返回首页';
     backButton.className = 'back-to-home';
 
