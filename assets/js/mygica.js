@@ -49,9 +49,7 @@ const imageMap = {
 const folderSelect = document.getElementById('folderSelect');
 const modeSelect = document.getElementById('modeSelect');
 const gallery = document.getElementById('gallery');
-const imgModal = document.getElementById('imgModal');
-const modalImg = document.getElementById('modalImg');
-const modalClose = document.getElementById('modalClose');
+
 
 function tryLoadSequential(imgEl, srcList, onSuccess, onFailure) {
     // srcList: URI（字符串）数组。按顺序尝试每个，直到加载成功为止。
@@ -125,13 +123,10 @@ function renderGallery() {
                 item.appendChild(failTip);
             });
 
-            // 点击时如果已加载则打开模态框
+            // 点击时如果已加载则跳转到原图
             item.onclick = () => {
                 const src = img.dataset.loadedSrc || img.src;
-                if (src) {
-                    modalImg.src = src;
-                    imgModal.classList.add('active');
-                }
+                if (src) location.href = src;
             };
 
             gallery.appendChild(item);
@@ -187,6 +182,9 @@ function renderGallery() {
 
                         // 清除加载标志
                         delete item.dataset.loading;
+
+                        // 加载成功后自动跳转到原图
+                        location.href = successfulUrl;
                     }, () => {
                         tip.textContent = '图片加载失败';
                         // 清除加载标志
@@ -194,10 +192,7 @@ function renderGallery() {
                     });
                 } else {
                     const src = img.dataset.loadedSrc || img.src;
-                    if (src) {
-                        modalImg.src = src;
-                        imgModal.classList.add('active');
-                    }
+                    if (src) location.href = src;
                 }
             };
 
@@ -208,17 +203,5 @@ function renderGallery() {
 
 folderSelect.onchange = renderGallery;
 modeSelect.onchange = renderGallery;
-
-modalClose.onclick = () => {
-    imgModal.classList.remove('active');
-    modalImg.src = '';
-};
-
-imgModal.onclick = (e) => {
-    if (e.target === imgModal) {
-        imgModal.classList.remove('active');
-        modalImg.src = '';
-    }
-};
 
 renderGallery();

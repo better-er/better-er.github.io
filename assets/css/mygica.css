@@ -152,53 +152,7 @@ select:focus {
     transition: opacity 0.3s;
 }
 
-/* 模态窗：全屏预览 */
-.img-modal {
-    display: none;
-    position: fixed;
-    z-index: 9999;
-    inset: 0;
-    background: #000;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    padding: 0;
-    margin: 0;
-}
 
-.img-modal.active {
-    display: flex;
-}
-
-.img-modal img {
-    max-width: 100vw;
-    max-height: 100vh;
-    object-fit: contain;
-    background: #000;
-    display: block;
-    margin: 0 auto;
-    box-shadow: none;
-    border-radius: 0;
-    pointer-events: none;
-}
-
-.img-modal .close {
-    position: absolute;
-    top: 24px;
-    right: 32px;
-    font-size: 40px;
-    color: #fff;
-    cursor: pointer;
-    font-weight: bold;
-    z-index: 10001;
-    text-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
-    transition: all 0.2s;
-}
-
-.img-modal .close:hover {
-    color: #ff6b6b;
-    transform: scale(1.1);
-}
 
 /* 响应式优化：小屏适应 */
 @media (max-width: 768px) {
