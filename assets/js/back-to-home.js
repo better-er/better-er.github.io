@@ -4,7 +4,10 @@
   // 判断是否是主页
   const isHome = window.location.pathname === '/index.html' || window.location.pathname === '/';
 
-  // 只在非主页页面显示"返回首页"按钮
+  // 判断是否是 404 页面
+  const is404 = document.title.includes('404');
+
+  // 只在非主页页面显示"返回首页"按钮（404 页面也不属于主页，自然也会显示）
   if (!isHome) {
     // 创建返回按钮
     const backButton = document.createElement('a');
