@@ -29,6 +29,21 @@ const imageMap = {
         ['https://i0.hdslb.com/bfs/openplatform/e052531f4b7779ab93e9cadbf556db79442340db.jpg', 'https://raw.githubusercontent.com/better-er/MyGICA-images-storage/refs/heads/master/MyGICA-fast-small-50/Mujica/mujica_changes_12.jpg'],
         ['https://i0.hdslb.com/bfs/openplatform/21238738d8d420c5a844b978208d03990017ec08.jpg', 'https://raw.githubusercontent.com/better-er/MyGICA-images-storage/refs/heads/master/MyGICA-fast-small-50/Mujica/mujica_changes_13.jpg'],
     ],
+    MewType: [
+        ['https://raw.githubusercontent.com/better-er/MyGICA-images-storage/refs/heads/master/MyGICA-fast-small-50/MewType/mita_changes_01.jpg'],
+        ['https://raw.githubusercontent.com/better-er/MyGICA-images-storage/refs/heads/master/MyGICA-fast-small-50/MewType/mita_changes_02.jpg'],
+        ['https://raw.githubusercontent.com/better-er/MyGICA-images-storage/refs/heads/master/MyGICA-fast-small-50/MewType/mita_changes_03.jpg'],
+        ['https://raw.githubusercontent.com/better-er/MyGICA-images-storage/refs/heads/master/MyGICA-fast-small-50/MewType/mita_changes_04.jpg'],
+        ['https://raw.githubusercontent.com/better-er/MyGICA-images-storage/refs/heads/master/MyGICA-fast-small-50/MewType/mita_changes_05.jpg'],
+        ['https://raw.githubusercontent.com/better-er/MyGICA-images-storage/refs/heads/master/MyGICA-fast-small-50/MewType/mita_changes_06.jpg'],
+        ['https://raw.githubusercontent.com/better-er/MyGICA-images-storage/refs/heads/master/MyGICA-fast-small-50/MewType/mita_changes_07.jpg'],
+        ['https://raw.githubusercontent.com/better-er/MyGICA-images-storage/refs/heads/master/MyGICA-fast-small-50/MewType/mita_changes_08.jpg'],
+        ['https://raw.githubusercontent.com/better-er/MyGICA-images-storage/refs/heads/master/MyGICA-fast-small-50/MewType/mita_changes_09.jpg'],
+        ['https://raw.githubusercontent.com/better-er/MyGICA-images-storage/refs/heads/master/MyGICA-fast-small-50/MewType/mita_changes_10.jpg'],
+        ['https://raw.githubusercontent.com/better-er/MyGICA-images-storage/refs/heads/master/MyGICA-fast-small-50/MewType/mita_changes_11.jpg'],
+        ['https://raw.githubusercontent.com/better-er/MyGICA-images-storage/refs/heads/master/MyGICA-fast-small-50/MewType/mita_changes_12.jpg'],
+        ['https://raw.githubusercontent.com/better-er/MyGICA-images-storage/refs/heads/master/MyGICA-fast-small-50/MewType/mita_changes_13.jpg'],
+    ],
     LycoReco: [
         ['https://i0.hdslb.com/bfs/openplatform/d8c244e56eb0dcdd5cad27ec40601febc1d9b5e4.jpg', 'https://raw.githubusercontent.com/better-er/MyGICA-images-storage/refs/heads/master/MyGICA-fast-small-50/LycoReco/Lycoris Recoil_changes_01.jpg'],
         ['https://raw.githubusercontent.com/better-er/MyGICA-images-storage/refs/heads/master/MyGICA-fast-small-50/LycoReco/Lycoris Recoil_changes_02.jpg'],
@@ -145,9 +160,6 @@ function renderGallery() {
             const img = document.createElement('img');
             img.alt = `${folder}_${idx + 1}`;
             img.setAttribute('data-srcs', JSON.stringify(srcs));
-            img.src = '';
-            img.style.filter = 'blur(8px)';
-            img.style.background = '#f5f5f5';
             img.style.transition = 'all 0.4s ease';
 
             const tip = document.createElement('div');
@@ -157,7 +169,21 @@ function renderGallery() {
             item.appendChild(img);
             item.appendChild(tip);
 
-            let loaded = false;
+            // 检查 sessionStorage 缓存
+            const cacheKey = `${folder}_${idx + 1}`;
+            const cachedUrl = sessionStorage.getItem(cacheKey);
+            if (cachedUrl) {
+                img.src = cachedUrl;
+                img.style.filter = 'none';
+                img.style.background = 'transparent';
+                if (tip && tip.parentNode) tip.parentNode.removeChild(tip);
+            } else {
+                img.src = '';
+                img.style.filter = 'blur(8px)';
+                img.style.background = '#f5f5f5';
+            }
+
+            let loaded = !!cachedUrl;
             item.onclick = () => {
                 // 防止在加载时重复尝试
                 if (item.dataset.loading) return;
@@ -180,6 +206,9 @@ function renderGallery() {
                         loaded = true;
                         img.dataset.loadedSrc = successfulUrl;
 
+                        // 存入 sessionStorage
+                        sessionStorage.setItem(cacheKey, successfulUrl);
+
                         // 清除加载标志
                         delete item.dataset.loading;
 
@@ -201,7 +230,16 @@ function renderGallery() {
     }
 }
 
-folderSelect.onchange = renderGallery;
+// 从 URL hash 恢复选中作品（如 #MewType）
+const hash = location.hash.slice(1);
+if (hash && imageMap[hash]) {
+    folderSelect.value = hash;
+}
+
+folderSelect.onchange = () => {
+    location.hash = folderSelect.value;
+    renderGallery();
+};
 modeSelect.onchange = renderGallery;
 
 renderGallery();
