@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>豆包图片去水印工具</title>
+    <script defer src="/assets/js/back-to-home.js"></script>
+    <link rel="stylesheet" href="assets/css/doubao.css">
+</head>
+<body>
+<div class="container">
+    <h1>🖼️ 豆包图片去水印</h1>
+    <p class="subtitle">在豆包中分别使用下载和F12元素获取两种水印位置不同的截图，交换后得到其中一张无水印图</p>
+
+    <div class="error-msg" id="errorMsg"></div>
+
+    <div class="drop-zone-container">
+        <div class="drop-zone" id="dropZone1">
+            <div class="icon">📷</div>
+            <div class="label">拖入图片 1<br><small>或点击选择</small></div>
+            <button class="remove-btn" id="removeBtn1">✕</button>
+        </div>
+        <div class="drop-zone" id="dropZone2">
+            <div class="icon">📷</div>
+            <div class="label">拖入图片 2<br><small>或点击选择</small></div>
+            <button class="remove-btn" id="removeBtn2">✕</button>
+        </div>
+    </div>
+
+    <div class="action-bar">
+        <button class="btn-primary" id="processBtn" disabled>处理并生成预览</button>
+        <button class="btn-secondary" id="clearBtn">清空</button>
+    </div>
+
+    <div class="result-section" id="resultSection">
+        <h2>✅ 处理结果</h2>
+        <p class="result-hint">两张结果中有一张无水印，请自行判断并下载</p>
+        <div class="result-grid">
+            <div class="result-card">
+                <div class="card-label">结果 1 <span>（图1左 + 图2右）</span></div>
+                <canvas id="resultCanvas1"></canvas>
+                <button class="download-btn" data-index="1">⬇ 下载结果 1</button>
+            </div>
+            <div class="result-card">
+                <div class="card-label">结果 2 <span>（图2左 + 图1右）</span></div>
+                <canvas id="resultCanvas2"></canvas>
+                <button class="download-btn" data-index="2">⬇ 下载结果 2</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="assets/js/doubao.js" defer></script>
+</body>
+</html>
