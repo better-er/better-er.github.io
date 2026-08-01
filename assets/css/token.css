@@ -25,6 +25,13 @@ h1 {
     margin-bottom: 30px;
 }
 
+/* 描述文本：支持 \n 换行显示 */
+#multi-desc {
+    white-space: pre-line;
+    margin-bottom: 16px;
+    color: var(--text-secondary);
+}
+
 /* 输入框基础样式（紧凑型） */
 textarea {
     font-family: 'Consolas', 'Menlo', 'Monaco', monospace;

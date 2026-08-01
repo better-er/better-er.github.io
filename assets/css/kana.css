@@ -177,6 +177,23 @@ p.small {
     font-size: 0.9em;
 }
 
+/* 输入框警示：强调需填入标准化格式（大模型处理结果） */
+.input-warning {
+    margin-bottom: 12px;
+    padding: 10px 12px;
+    background-color: var(--alert);
+    border: 1px solid var(--alert-border);
+    border-left: 4px solid var(--alert-border);
+    border-radius: 4px;
+    color: #842029;
+    font-size: 0.85rem;
+    line-height: 1.6;
+}
+
+.input-warning strong {
+    font-weight: 600;
+}
+
 ::-webkit-scrollbar {
     width: 7px;
     height: 7px;
