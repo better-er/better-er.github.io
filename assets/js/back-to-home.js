@@ -1,6 +1,16 @@
 // assets/js/back-to-home.js
 
 (function () {
+  // ==================== 统一注入站点图标（favicon）====================
+  // 只要引入本脚本就能自动加上图标，无需在页面里逐个手写 <link>
+  if (!document.querySelector('link[rel="icon"]')) {
+    const favicon = document.createElement('link');
+    favicon.rel = 'icon';
+    favicon.type = 'image/png';
+    favicon.href = '/assets/favicon.webp';
+    document.head.appendChild(favicon);
+  }
+
   // 判断是否是主页
   const isHome = window.location.pathname === '/index.html' || window.location.pathname === '/';
 
