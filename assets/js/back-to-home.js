@@ -25,23 +25,23 @@
     backButton.textContent = '返回首页';
     backButton.className = 'back-to-home';
 
-    // 添加样式（直接内联，避免外部 CSS 加载延迟）
+    // 默认半透明、紧凑贴边，悬停时变清晰——降低对内容的视觉遮挡
     const style = `
         position: fixed;
-        top: 24px;
-        left: 24px;
-        padding: 10px 16px;
-        background: rgba(255, 255, 255, 0.8);
+        top: 16px;
+        left: 16px;
+        padding: 8px 12px;
+        background: rgba(255, 255, 255, 0.75);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.6);
-        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.55);
+        border-radius: 14px;
         color: #2c3e50;
-        font-size: 15px;
+        font-size: 14px;
         font-weight: 500;
         text-decoration: none;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         z-index: 9999;
         display: flex;
         align-items: center;
@@ -49,22 +49,34 @@
         white-space: nowrap;
         cursor: pointer;
         font-family: inherit; /* 统一字体 */
+        opacity: 0.35; /* 默认半透明，不抢视觉 */
+        -webkit-tap-highlight-color: transparent;
     `;
 
     backButton.setAttribute('style', style);
 
-    // 悬停效果：轻微上浮，背景变透，阴影增强
-    backButton.addEventListener('mouseenter', () => {
-      backButton.style.transform = 'translateY(-3px)';
-      backButton.style.background = 'rgba(255, 255, 255, 0.9)';
-      backButton.style.boxShadow = '0 10px 28px rgba(0, 0, 0, 0.08)';
-    });
-
-    backButton.addEventListener('mouseleave', () => {
+    // 悬停/聚焦时变清晰，轻微上浮
+    const setActive = () => {
+      backButton.style.opacity = '1';
+      backButton.style.transform = 'translateY(-2px)';
+      backButton.style.background = 'rgba(255, 255, 255, 0.95)';
+      backButton.style.boxShadow = '0 10px 26px rgba(0, 0, 0, 0.1)';
+      icon.style.opacity = '1';
+    };
+    const setIdle = () => {
+      backButton.style.opacity = '0.35';
       backButton.style.transform = 'translateY(0)';
-      backButton.style.background = 'rgba(255, 255, 255, 0.8)';
-      backButton.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.05)';
-    });
+      backButton.style.background = 'rgba(255, 255, 255, 0.75)';
+      backButton.style.boxShadow = '0 4px 14px rgba(0, 0, 0, 0.06)';
+      icon.style.opacity = '0.8';
+    };
+
+    backButton.addEventListener('mouseenter', setActive);
+    backButton.addEventListener('mouseleave', setIdle);
+    backButton.addEventListener('touchstart', setActive, { passive: true });
+    backButton.addEventListener('touchend', setIdle);
+    backButton.addEventListener('focus', setActive);
+    backButton.addEventListener('blur', setIdle);
 
     // 点击反馈：轻微压下
     backButton.addEventListener('mousedown', () => {
@@ -73,25 +85,17 @@
     });
 
     backButton.addEventListener('mouseup', () => {
-      backButton.style.transform = 'translateY(-3px)';
-      backButton.style.boxShadow = '0 10px 28px rgba(0, 0, 0, 0.08)';
+      backButton.style.transform = 'translateY(-2px)';
+      backButton.style.boxShadow = '0 10px 26px rgba(0, 0, 0, 0.1)';
     });
 
     // 添加图标（Unicode 箭头 + 平滑过渡）
     const icon = document.createElement('span');
     icon.innerHTML = '←';
-    icon.style.fontSize = '18px';
+    icon.style.fontSize = '16px';
     icon.style.opacity = '0.8';
     icon.style.transition = 'opacity 0.2s';
     backButton.prepend(icon);
-
-    // 悬停时图标变亮
-    backButton.addEventListener('mouseenter', () => {
-      icon.style.opacity = '1';
-    });
-    backButton.addEventListener('mouseleave', () => {
-      icon.style.opacity = '0.8';
-    });
 
     // 插入页面顶部
     document.body.insertBefore(backButton, document.body.firstChild);
