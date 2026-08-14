@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片切割工具</title>
+    <script defer src="/assets/js/back-to-home.js"></script>
+    <link rel="stylesheet" href="assets/css/split_pic.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🖼️ 图片吸附切割工具</h1>
+        </header>
+
+        <div class="controls">
+            <div class="control-row">
+                <label class="file-button">
+                    📂 打开图片
+                    <input type="file" id="fileInput" accept="image/png,image/jpeg,image/jpg" style="display: none;">
+                </label>
+                <button id="recut" disabled>✂️ 重新切割</button>
+            </div>
+
+            <div class="control-row">
+                <label for="threshold">阈值 (纯色突变):</label>
+                <input type="range" id="threshold" min="0" max="255" value="60" step="1">
+                <span id="thresholdValue">60</span>
+            </div>
+
+            <div class="control-row">
+                <span id="selectedCount">已选择 0 条分割线</span>
+                <button id="applySplit" disabled>✂️ 应用分割并保存</button>
+                <button id="clearSelection" disabled>🗑️ 清空选择</button>
+            </div>
+        </div>
+
+        <div id="statusMessage" class="status-message"></div>
+
+        <div id="splitsPanel" class="splits-panel" style="display: none;">
+            <details open>
+                <summary id="splitsSummary">检测到的分割线 (0 条)</summary>
+                <div id="splitsWarning" class="warning" style="display: none;"></div>
+                <div id="splitsList" class="splits-list"></div>
+            </details>
+        </div>
+
+        <div class="image-container">
+            <div id="filePath" class="file-path"></div>
+            <div id="canvasWrapper" class="canvas-wrapper">
+                <div id="dropHint" class="drop-hint">拖拽图片到此处上传</div>
+                <canvas id="canvas"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/split_pic.js" defer></script>
+</body>
+</html>
