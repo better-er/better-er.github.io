@@ -321,3 +321,144 @@ summary:hover {
     font-size: 1.1em;
     padding: 40px;
 }
+
+/* ===== 切割结果面板 ===== */
+.parts-panel {
+    margin-top: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    background: #f9f9f9;
+}
+
+.parts-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.parts-title {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+
+.parts-title h3 {
+    margin: 0;
+    color: #667eea;
+    font-size: 1.15em;
+}
+
+.parts-summary {
+    color: #888;
+    font-size: 0.9em;
+}
+
+.parts-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.parts-selected-count {
+    color: #666;
+    font-weight: 500;
+}
+
+.parts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.part-card {
+    background: #fff;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    user-select: none;
+}
+
+.part-card:hover {
+    border-color: #a6b0f5;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.part-card.selected {
+    border-color: #667eea;
+    background: #eef1ff;
+}
+
+.part-thumb {
+    width: 100%;
+    height: 120px;
+    object-fit: contain;
+    background: #f0f2f8;
+    border-radius: 4px;
+    border: 1px solid #eee;
+}
+
+.part-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 0.85em;
+    color: #888;
+}
+
+.part-info strong {
+    color: #333;
+    font-size: 1em;
+}
+
+.part-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.part-check-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9em;
+    color: #555;
+    cursor: pointer;
+    user-select: none;
+}
+
+.part-check-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #667eea;
+    cursor: pointer;
+}
+
+.part-download {
+    padding: 6px 14px;
+    font-size: 13px;
+    background: #667eea;
+    border-radius: 6px;
+}
+
+.part-download:hover:not(:disabled) {
+    background: #5568d3;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(102, 126, 234, 0.4);
+}
+
+.parts-tip {
+    margin: 12px 0 0;
+    font-size: 0.85em;
+    color: #999;
+}

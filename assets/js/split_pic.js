@@ -6,6 +6,7 @@ const state = {
     fileName: '',
     detectedSplits: [],
     selectedSplits: new Set(),
+    selectedParts: new Set(), // 切割结果中勾选要下载的块（index 集合）
     canvas: null,
     ctx: null,
     gutter: 24,
@@ -30,6 +31,11 @@ const elements = {
     canvas: document.getElementById('canvas'),
     canvasWrapper: document.getElementById('canvasWrapper'),
     dropHint: document.getElementById('dropHint'),
+    partsPanel: document.getElementById('partsPanel'),
+    partsSummary: document.getElementById('partsSummary'),
+    partsSelectedCount: document.getElementById('partsSelectedCount'),
+    downloadSelectedParts: document.getElementById('downloadSelectedParts'),
+    partsGrid: document.getElementById('partsGrid'),
 };
 
 const DETECTED_COLORS = [
@@ -65,6 +71,7 @@ function init() {
     elements.threshold.addEventListener('input', updateThresholdValue);
     elements.applySplit.addEventListener('click', applySplitAndSave);
     elements.clearSelection.addEventListener('click', clearSelection);
+    elements.downloadSelectedParts.addEventListener('click', handleDownloadSelectedParts);
     elements.canvasWrapper.addEventListener('dragenter', handleDragEnter);
     elements.canvasWrapper.addEventListener('dragover', handleDragOver);
     elements.canvasWrapper.addEventListener('dragleave', handleDragLeave);
@@ -74,7 +81,7 @@ function init() {
     elements.canvas.addEventListener('mouseleave', clearCanvasHover);
 
     setDropHintVisible(true);
-    showStatus('使用复选框选择多条分割线，切割成 n+1 份图片');
+    showStatus('勾选分割线后，可下载全部块，或在「切割结果」中挑选部分块单独下载');
 }
 
 // 文件选择处理
@@ -208,6 +215,7 @@ function segmentImage() {
     // 更新UI
     state.hoverY = null; // 重新检测后旧的悬停预览可能失效
     updateSplitsPanel();
+    updatePartsPanel();
     drawSelectedLines();
     showStatus(`检测完成，共找到 ${state.detectedSplits.length} 条分割线`);
 }
@@ -330,6 +338,7 @@ function toggleSplit(y, checked) {
     updateSelectionUI();
     syncCheckbox(y);
     redrawCanvas();
+    updatePartsPanel(); // 切割结果随分割线选择变化
 }
 
 // 让面板中的复选框与选中状态保持一致（点图片/点复选框都会触发）
@@ -352,6 +361,7 @@ function updateSelectionUI() {
 function clearSelection() {
     state.selectedSplits.clear();
     updateSplitsPanel();
+    updatePartsPanel();
     redrawCanvas();
     showStatus('已清空所有选择');
 }
@@ -589,19 +599,11 @@ function drawHoverLine(y) {
     drawArrow(y, 2.5, 'rgba(102, 126, 234, 0.95)');
 }
 
-// 应用分割并保存
-function applySplitAndSave() {
-    if (!state.image || state.selectedSplits.size === 0) return;
-
-    showStatus('正在生成分割图像...');
-
-    const width = state.image.width;
+// 根据当前选中的分割线计算切割区间
+function computeSegments() {
     const height = state.image.height;
-
-    // 排序分割点
     const splitPoints = Array.from(state.selectedSplits).sort((a, b) => a - b);
 
-    // 构建切割区间
     const segments = [];
     let start = 0;
 
@@ -618,11 +620,23 @@ function applySplitAndSave() {
         segments.push({ start, end: height });
     }
 
-    // 生成每个片段
+    return segments;
+}
+
+// 下载指定序号（segments 下标）的若干块
+function downloadParts(indexes) {
+    if (!state.image || indexes.length === 0) return;
+
+    showStatus(`正在生成分割图像...（${indexes.length} 个文件）`);
+
+    const width = state.image.width;
+    const segments = computeSegments();
     const baseName = getOutputBaseName();
 
-    for (let idx = 0; idx < segments.length; idx += 1) {
+    indexes.forEach((idx, order) => {
         const seg = segments[idx];
+        if (!seg) return;
+
         const segHeight = seg.end - seg.start;
         const tempCanvas = document.createElement('canvas');
         tempCanvas.width = width;
@@ -647,11 +661,158 @@ function applySplitAndSave() {
                     a.click();
                     URL.revokeObjectURL(url);
                 }, 'image/png');
-            }, segNum * 50);
+            }, order * 50);
         })(idx);
+    });
+}
+
+// 下载单个部分
+function downloadPart(index) {
+    downloadParts([index]);
+    showStatus(`已开始下载第 ${index + 1} 块`);
+}
+
+// 应用分割并保存（下载全部块）
+function applySplitAndSave() {
+    if (!state.image || state.selectedSplits.size === 0) return;
+
+    const segments = computeSegments();
+    if (segments.length === 0) return;
+
+    downloadParts(segments.map((_, i) => i));
+    showStatus(`分割成功！共生成 ${segments.length} 个文件`);
+}
+
+// 更新「切割结果」面板
+function updatePartsPanel() {
+    if (!state.image || state.selectedSplits.size === 0) {
+        elements.partsPanel.style.display = 'none';
+        return;
     }
 
-    showStatus(`分割成功！共生成 ${segments.length} 个文件`);
+    const segments = computeSegments();
+    if (segments.length < 2) {
+        // 只有一块（例如分割线落在首尾），无需挑选
+        elements.partsPanel.style.display = 'none';
+        return;
+    }
+
+    elements.partsPanel.style.display = 'block';
+    elements.partsSummary.textContent = `共 ${segments.length} 块`;
+
+    // 块集合已变化，重置已选部分，默认全部勾选
+    state.selectedParts = new Set(segments.map((_, i) => i));
+
+    elements.partsGrid.innerHTML = '';
+    segments.forEach((seg, idx) => {
+        elements.partsGrid.appendChild(buildPartCard(seg, idx));
+    });
+
+    updatePartsUI();
+}
+
+// 构建单个部分卡片
+function buildPartCard(seg, idx) {
+    const width = state.image.width;
+    const segHeight = seg.end - seg.start;
+
+    const card = document.createElement('div');
+    card.className = 'part-card selected';
+    card.dataset.index = idx;
+
+    // 缩略图（限制尺寸，避免超大图生成过大的预览）
+    const previewScale = Math.min(1, 160 / width, 120 / segHeight);
+    const tw = Math.max(1, Math.round(width * previewScale));
+    const th = Math.max(1, Math.round(segHeight * previewScale));
+    const thumbCanvas = document.createElement('canvas');
+    thumbCanvas.width = tw;
+    thumbCanvas.height = th;
+    thumbCanvas.getContext('2d').drawImage(
+        state.image,
+        0, seg.start, width, segHeight,
+        0, 0, tw, th
+    );
+
+    const img = document.createElement('img');
+    img.className = 'part-thumb';
+    img.src = thumbCanvas.toDataURL('image/png');
+    img.alt = `第 ${idx + 1} 块`;
+
+    // 信息
+    const info = document.createElement('div');
+    info.className = 'part-info';
+    const title = document.createElement('strong');
+    title.textContent = `第 ${idx + 1} 块`;
+    const size = document.createElement('span');
+    size.textContent = `${width} × ${segHeight} px`;
+    info.appendChild(title);
+    info.appendChild(size);
+
+    // 操作区
+    const actions = document.createElement('div');
+    actions.className = 'part-actions';
+
+    const label = document.createElement('label');
+    label.className = 'part-check-label';
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.className = 'part-check';
+    checkbox.checked = true;
+    label.appendChild(checkbox);
+    label.appendChild(document.createTextNode('选择'));
+    actions.appendChild(label);
+
+    const downloadBtn = document.createElement('button');
+    downloadBtn.className = 'part-download';
+    downloadBtn.textContent = '⬇️';
+    downloadBtn.title = `下载第 ${idx + 1} 块`;
+    actions.appendChild(downloadBtn);
+
+    card.appendChild(img);
+    card.appendChild(info);
+    card.appendChild(actions);
+
+    // 勾选切换
+    checkbox.addEventListener('change', () => {
+        if (checkbox.checked) {
+            state.selectedParts.add(idx);
+        } else {
+            state.selectedParts.delete(idx);
+        }
+        card.classList.toggle('selected', checkbox.checked);
+        updatePartsUI();
+    });
+
+    // 点击卡片主体（非下载按钮、非勾选框）切换选择
+    card.addEventListener('click', (event) => {
+        if (event.target.closest('.part-download') || event.target.closest('.part-check-label')) return;
+        checkbox.checked = !checkbox.checked;
+        checkbox.dispatchEvent(new Event('change'));
+    });
+
+    // 单独下载这一块
+    downloadBtn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        downloadPart(idx);
+    });
+
+    return card;
+}
+
+// 更新结果面板的选择状态 UI
+function updatePartsUI() {
+    const count = state.selectedParts.size;
+    elements.partsSelectedCount.textContent = `已选 ${count} 块`;
+    elements.downloadSelectedParts.disabled = count === 0;
+}
+
+// 下载勾选的部分
+function handleDownloadSelectedParts() {
+    const indexes = Array.from(state.selectedParts).sort((a, b) => a - b);
+    if (indexes.length === 0) return;
+
+    downloadParts(indexes);
+    showStatus(`已开始下载选中的 ${indexes.length} 块`);
 }
 
 function getOutputBaseName() {

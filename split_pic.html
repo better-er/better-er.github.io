@@ -52,6 +52,21 @@
                 <canvas id="canvas"></canvas>
             </div>
         </div>
+
+        <div id="partsPanel" class="parts-panel" style="display: none;">
+            <div class="parts-header">
+                <div class="parts-title">
+                    <h3>📦 切割结果</h3>
+                    <span id="partsSummary" class="parts-summary"></span>
+                </div>
+                <div class="parts-actions">
+                    <span id="partsSelectedCount" class="parts-selected-count">已选 0 块</span>
+                    <button id="downloadSelectedParts" disabled>⬇️ 下载选中块</button>
+                </div>
+            </div>
+            <div id="partsGrid" class="parts-grid"></div>
+            <p class="parts-tip">点击卡片勾选要下载的块，再点「下载选中块」；或直接点卡片上的「⬇️」按钮单独下载这一块</p>
+        </div>
     </div>
 
     <script src="assets/js/split_pic.js" defer></script>
