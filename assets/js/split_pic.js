@@ -115,6 +115,15 @@ function loadFile(file) {
 
 // 加载图片
 function loadImage(img) {
+    // 更换图片时重置切割相关状态
+    state.detectedSplits = [];
+    state.selectedSplits.clear();
+    state.selectedParts.clear();
+    state.hoverY = null;
+    updateSelectionUI(); // 立即禁用「应用分割/清空选择」
+    elements.splitsPanel.style.display = 'none';
+    elements.partsPanel.style.display = 'none';
+
     const scaleX = estimateDisplayScaleX(img.width + LEFT_GUTTER);
     const minArrowCanvasPx = MIN_ARROW_PX / Math.max(scaleX, 0.01);
     state.gutter = Math.max(LEFT_GUTTER, Math.ceil(minArrowCanvasPx + 10));

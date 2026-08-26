@@ -14,25 +14,34 @@
         </header>
 
         <div class="controls">
-            <div class="control-row">
-                <label class="file-button">
-                    📂 打开图片
-                    <input type="file" id="fileInput" accept="image/png,image/jpeg,image/jpg" style="display: none;">
-                </label>
-                <button id="recut" disabled>✂️ 重新切割</button>
-            </div>
+            <section class="control-group">
+                <div class="group-label">1 · 图片</div>
+                <div class="control-row">
+                    <label class="file-button">
+                        📂 打开图片
+                        <input type="file" id="fileInput" accept="image/png,image/jpeg,image/jpg" style="display: none;">
+                    </label>
+                </div>
+            </section>
 
-            <div class="control-row">
-                <label for="threshold">阈值 (纯色突变):</label>
-                <input type="range" id="threshold" min="0" max="255" value="60" step="1">
-                <span id="thresholdValue">60</span>
-            </div>
+            <section class="control-group">
+                <div class="group-label">2 · 切割参数</div>
+                <div class="control-row">
+                    <label for="threshold">阈值 (纯色突变):</label>
+                    <input type="range" id="threshold" min="0" max="255" value="60" step="1">
+                    <span id="thresholdValue">60</span>
+                    <button id="recut" disabled>✂️ 重新切割</button>
+                </div>
+            </section>
 
-            <div class="control-row">
-                <span id="selectedCount">已选择 0 条分割线</span>
-                <button id="applySplit" disabled>✂️ 应用分割并保存</button>
-                <button id="clearSelection" disabled>🗑️ 清空选择</button>
-            </div>
+            <section class="control-group">
+                <div class="group-label">3 · 分割操作</div>
+                <div class="control-row">
+                    <span id="selectedCount">已选择 0 条分割线</span>
+                    <button id="applySplit" class="primary" disabled>✂️ 应用分割并保存</button>
+                    <button id="clearSelection" class="ghost" disabled>🗑️ 清空选择</button>
+                </div>
+            </section>
         </div>
 
         <div id="statusMessage" class="status-message"></div>

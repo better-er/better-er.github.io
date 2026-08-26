@@ -33,13 +33,31 @@ h1 {
 
 .controls {
     margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.control-group {
+    background: #f9f9f9;
+    border: 1px solid #e5e7f0;
+    border-radius: 10px;
+    padding: 12px 16px;
+}
+
+.group-label {
+    font-size: 0.78em;
+    font-weight: 700;
+    color: #8a94b8;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
 }
 
 .control-row {
     display: flex;
     gap: 15px;
     align-items: center;
-    margin-bottom: 15px;
     flex-wrap: wrap;
 }
 
@@ -84,6 +102,40 @@ button:disabled {
     background: #ccc;
     cursor: not-allowed;
     transform: none;
+}
+
+/* 主操作按钮：更醒目 */
+button.primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 11px 26px;
+    font-size: 15px;
+    box-shadow: 0 4px 14px rgba(102, 126, 234, 0.35);
+}
+
+button.primary:hover:not(:disabled) {
+    background: linear-gradient(135deg, #5568d3 0%, #663d91 100%);
+    box-shadow: 0 6px 18px rgba(102, 126, 234, 0.45);
+}
+
+/* 次要操作：弱化为幽灵按钮 */
+button.ghost {
+    background: #fff;
+    color: #dc3545;
+    border: 1.5px solid #dc3545;
+}
+
+button.ghost:hover:not(:disabled) {
+    background: #fff5f5;
+    color: #c82333;
+    border-color: #c82333;
+    transform: none;
+    box-shadow: none;
+}
+
+button.ghost:disabled {
+    background: #f0f0f0;
+    color: #aaa;
+    border-color: #ddd;
 }
 
 input[type="range"] {
