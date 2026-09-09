@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>打字速度测试 · token/s</title>
+    <script defer src="/assets/js/back-to-home.js"></script>
+    <link rel="stylesheet" href="assets/css/typing.css">
+</head>
+<body>
+<div class="container">
+    <h1>打字速度测试</h1>
+    <p class="subtitle">按 DeepSeek 官方分词器统计，单位 token/s</p>
+
+    <div id="loader" class="loader">
+        <div class="loader-bar"><div id="loader-fill" class="loader-fill"></div></div>
+        <div id="loader-text" class="loader-text">正在加载 DeepSeek 分词器 6.07 MB</div>
+    </div>
+
+    <div id="app" class="app" hidden>
+        <div class="toolbar">
+            <div class="toolbar-group" id="mode-group">
+                <button type="button" class="chip" data-mode="target">照打原文</button>
+                <button type="button" class="chip" data-mode="free">自由输入</button>
+            </div>
+            <button type="button" class="chip ghost" id="btn-reset">重来</button>
+        </div>
+
+        <div class="sub-row" id="cat-row">
+            <span class="sub-label">素材</span>
+            <div class="toolbar-group" id="cat-group">
+                <button type="button" class="chip" data-cat="zh">中文</button>
+                <button type="button" class="chip" data-cat="en">英文</button>
+                <button type="button" class="chip" data-cat="code">代码</button>
+                <button type="button" class="chip" data-cat="custom">自定义</button>
+            </div>
+        </div>
+
+        <div class="custom-panel" id="custom-panel" hidden>
+            <textarea id="custom-text" class="custom-input" rows="3" spellcheck="false"
+                      placeholder="粘贴或输入你想练的原文，点应用后开始"></textarea>
+            <div class="custom-actions">
+                <button type="button" class="chip" id="btn-apply-custom">应用这段原文</button>
+                <span class="custom-hint">内容会存在浏览器本地，下次还能用</span>
+            </div>
+        </div>
+
+        <div id="target-panel">
+            <div id="target-text" class="target-text" aria-label="目标文本"></div>
+            <div class="token-note">
+                下方竖线是分词边界，共 <span id="target-token-count">0</span> 个 token，
+                <span id="target-char-count">0</span> 个字符
+            </div>
+        </div>
+
+        <textarea id="input" class="input" rows="4" spellcheck="false"
+                  placeholder="在这里打字，开始计时"></textarea>
+
+        <div class="stats">
+            <div class="stat main">
+                <div class="stat-value"><span id="stat-tps">0.0</span><span class="unit">token/s</span></div>
+                <div class="stat-label">最近 60 秒</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value"><span id="stat-cpm">0</span><span class="unit">字/分</span></div>
+                <div class="stat-label">最近 60 秒</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value"><span id="stat-acc">100</span><span class="unit">%</span></div>
+                <div class="stat-label">准确率</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value"><span id="stat-time">0.0</span><span class="unit">秒</span></div>
+                <div class="stat-label">用时</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value"><span id="stat-total">0</span><span class="unit">token</span></div>
+                <div class="stat-label">已完成</div>
+            </div>
+        </div>
+
+        <div class="chart-wrap">
+            <div class="chart-head">
+                <span class="chart-title">token 累计曲线</span>
+                <span class="chart-hint">最近 60 秒，斜率即此刻速度</span>
+            </div>
+            <canvas id="chart" class="chart"></canvas>
+        </div>
+
+        <div class="footnote">
+            <span id="footnote-text">照打原文模式下，token 边界取自目标文本，计数只增不减</span>
+        </div>
+    </div>
+</div>
+
+<script type="module" src="assets/js/typing.js"></script>
+</body>
+</html>

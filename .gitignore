@@ -12,3 +12,7 @@ wheels/
 
 # dsh vision router artifacts
 .dsh-vision-router/
+
+# 本地 PR 草稿，不进仓库
+docs/*-pr-*.md
+
