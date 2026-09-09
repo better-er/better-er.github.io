@@ -1,0 +1,314 @@
+/* hidden 属性必须能压过 display:flex，否则带 flex 的容器隐藏不掉 */
+[hidden] {
+    display: none !important;
+}
+
+body {
+    font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: white;
+    padding: 28px 30px 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin: 0 0 6px;
+    font-size: 24px;
+}
+
+.subtitle {
+    text-align: center;
+    color: #8a8f94;
+    font-size: 13px;
+    margin: 0 0 22px;
+}
+
+.loader {
+    padding: 26px 0 18px;
+}
+
+.loader-bar {
+    height: 8px;
+    background: #eef1f4;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.loader-fill {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, #7aa8e8, #4a7fd4);
+    transition: width 0.15s ease;
+}
+
+.loader-text {
+    text-align: center;
+    color: #7b838b;
+    font-size: 13px;
+    margin-top: 12px;
+}
+
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.toolbar-group {
+    display: flex;
+    gap: 6px;
+}
+
+.chip {
+    border: 1px solid #dfe4ea;
+    background: #fbfcfd;
+    color: #4a5560;
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.chip:hover {
+    border-color: #b9cde8;
+    color: #2c3e50;
+}
+
+.chip.active {
+    background: #4a7fd4;
+    border-color: #4a7fd4;
+    color: #fff;
+}
+
+.chip.ghost {
+    margin-left: auto;
+}
+
+.sub-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: -6px 0 14px 2px;
+}
+
+.sub-label {
+    font-size: 12px;
+    color: #a7b0b9;
+}
+
+.sub-row .chip {
+    padding: 4px 11px;
+    font-size: 12px;
+}
+
+.custom-panel {
+    margin: -4px 0 16px;
+    padding: 12px;
+    border: 1px solid #e8ecf1;
+    border-radius: 10px;
+    background: #fafbfd;
+}
+
+.custom-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    font-size: 15px;
+    line-height: 1.7;
+    font-family: "Consolas", "Microsoft YaHei", monospace;
+    border: 1px solid #dfe4ea;
+    border-radius: 8px;
+    resize: vertical;
+    outline: none;
+    background: #fff;
+}
+
+.custom-input:focus {
+    border-color: #4a7fd4;
+}
+
+.custom-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.custom-hint {
+    font-size: 12px;
+    color: #a7b0b9;
+}
+
+.target-text {
+    font-size: 18px;
+    line-height: 1.9;
+    letter-spacing: 0.02em;
+    padding: 14px 16px;
+    border: 1px solid #e8ecf1;
+    border-radius: 10px;
+    background: #fcfdfe;
+    word-break: break-word;
+    white-space: pre-wrap;
+    font-family: "Consolas", "Microsoft YaHei", monospace;
+}
+
+.target-text .ch {
+    position: relative;
+}
+
+.target-text .ch.ok {
+    color: #2e7d4f;
+}
+
+.target-text .ch.bad {
+    color: #fff;
+    background: #e05a5a;
+    border-radius: 3px;
+}
+
+.target-text .ch.tok-start {
+    border-left: 1px solid #d3dbe4;
+    margin-left: -1px;
+}
+
+.target-text .ch.cursor::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 2px;
+    background: #4a7fd4;
+}
+
+.token-note {
+    color: #8a8f94;
+    font-size: 12px;
+    margin-top: 8px;
+}
+
+.input {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 14px;
+    padding: 12px 14px;
+    font-size: 16px;
+    line-height: 1.7;
+    font-family: "Consolas", "Microsoft YaHei", monospace;
+    border: 1px solid #dfe4ea;
+    border-radius: 10px;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.18s ease;
+}
+
+.input:focus {
+    border-color: #4a7fd4;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.stat {
+    background: #f8fafc;
+    border: 1px solid #eef1f5;
+    border-radius: 10px;
+    padding: 12px 10px;
+    text-align: center;
+}
+
+.stat.main {
+    background: #f0f6ff;
+    border-color: #d6e4f8;
+}
+
+.stat-value {
+    font-size: 22px;
+    font-weight: 600;
+    color: #2c3e50;
+    font-variant-numeric: tabular-nums;
+}
+
+.stat.main .stat-value {
+    color: #2c6ad4;
+}
+
+.stat-value .unit {
+    font-size: 12px;
+    font-weight: 400;
+    color: #8a8f94;
+    margin-left: 4px;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #8a8f94;
+    margin-top: 4px;
+}
+
+.chart-wrap {
+    margin-top: 18px;
+    border: 1px solid #eef1f5;
+    border-radius: 10px;
+    background: #fbfcfe;
+    padding: 10px 12px 6px;
+}
+
+.chart-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.chart-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #55606a;
+}
+
+.chart-hint {
+    font-size: 12px;
+    color: #a7b0b9;
+}
+
+.chart {
+    display: block;
+    width: 100%;
+    height: 160px;
+}
+
+.footnote {
+    margin-top: 16px;
+    text-align: center;
+    color: #9aa2aa;
+    font-size: 12px;
+}
+
+@media (max-width: 560px) {
+    .container {
+        padding: 20px 16px;
+    }
+    .target-text {
+        font-size: 16px;
+    }
+}
