@@ -1,4 +1,4 @@
-import { loadTokenizer } from './typing-tokenizer.js';
+import { loadTokenizer, TOKENIZER_BYTES } from './typing-tokenizer.js';
 import { TokenChart } from './typing-chart.js';
 
 const TOKENIZER_URL = 'assets/json/deepseek_v4_tokenizer.json';
@@ -456,8 +456,15 @@ async function init() {
   bindToolbar();
   bindInput();
   const t0 = performance.now();
+  let shownPct = -1;
   const tokenizer = await loadTokenizer(TOKENIZER_URL, (p) => {
-    el('loader-fill').style.width = (p * 100).toFixed(1) + '%';
+    const pct = Math.round(p * 100);
+    el('loader-fill').style.width = pct + '%';
+    if (pct === shownPct) return;
+    shownPct = pct;
+    el('loader-text').textContent = pct >= 100
+      ? '下载完成，正在解析词表…'
+      : '正在加载 DeepSeek 分词器 ' + (TOKENIZER_BYTES / (1024 * 1024)).toFixed(2) + ' MB · ' + pct + '%';
   });
   state.tokenizer = tokenizer;
   const cost = ((performance.now() - t0) / 1000).toFixed(1);
@@ -480,4 +487,5 @@ async function init() {
 
 init().catch((err) => {
   el('loader-text').textContent = '加载失败: ' + err.message;
+  el('loader-fill').classList.add('error');
 });

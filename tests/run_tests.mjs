@@ -1,6 +1,6 @@
 // typing 页面的验证脚本，在仓库根目录执行：node tests/run_tests.mjs
 import fs from 'node:fs';
-import { TypingTokenizer } from '../assets/js/typing-tokenizer.js';
+import { TypingTokenizer, TOKENIZER_BYTES } from '../assets/js/typing-tokenizer.js';
 
 const TOKENIZER_PATH = 'assets/json/deepseek_v4_tokenizer.json';
 
@@ -22,6 +22,14 @@ function section(title) {
 }
 
 const tokenizer = new TypingTokenizer(JSON.parse(fs.readFileSync(TOKENIZER_PATH, 'utf8')));
+
+// ============ 零、常量与资源 ============
+section('零、常量与资源');
+{
+  const size = fs.statSync(TOKENIZER_PATH).size;
+  check('TOKENIZER_BYTES 与分词器文件大小一致', size === TOKENIZER_BYTES,
+    '文件 ' + size + ' 字节，常量 ' + TOKENIZER_BYTES + ' 字节');
+}
 
 // ============ 一、分词正确性 ============
 // 对照值由官方 tokenizers 库对同一份 tokenizer.json 生成，逐 id 比对

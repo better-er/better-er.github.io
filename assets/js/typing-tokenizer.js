@@ -175,13 +175,26 @@ export class TypingTokenizer {
   }
 }
 
+// 仓库内 assets/json/deepseek_v4_tokenizer.json 的原始字节数，即 6.07 MB。
+// GitHub Pages 会按 Accept-Encoding 返回 gzip 版本，content-length 只有约 1.85 MB，
+// 而 fetch 拿到的 body 是解压后的字节流，用 content-length 当分母会让进度虚高到三倍。
+// 浏览器脚本无法要求不压缩，所以这里写死原始大小，tests/run_tests.mjs 会校验它与文件大小一致。
+export const TOKENIZER_BYTES = 6367146;
+
+// 让出一次事件循环，先把进度条和提示渲染出去，再跑会阻塞主线程的解析与词表构建
+function yieldOnce() {
+  return new Promise((resolve) => setTimeout(resolve, 0));
+}
+
 // 带进度回调地加载 tokenizer.json
 export async function loadTokenizer(url, onProgress) {
   const res = await fetch(url);
   if (!res.ok) throw new Error('分词器加载失败: HTTP ' + res.status);
-  const total = Number(res.headers.get('content-length')) || 0;
-  if (!res.body || !total) {
+  if (!res.body) {
+    // 少数环境拿不到流式 body，只能一次性读，中途没有进度可报
     const json = await res.json();
+    if (onProgress) onProgress(1);
+    await yieldOnce();
     return new TypingTokenizer(json);
   }
   const reader = res.body.getReader();
@@ -192,7 +205,7 @@ export async function loadTokenizer(url, onProgress) {
     if (done) break;
     chunks.push(value);
     received += value.length;
-    if (onProgress) onProgress(received / total);
+    if (onProgress) onProgress(Math.min(received / TOKENIZER_BYTES, 1));
   }
   const buf = new Uint8Array(received);
   let offset = 0;
@@ -200,7 +213,7 @@ export async function loadTokenizer(url, onProgress) {
     buf.set(c, offset);
     offset += c.length;
   }
-  const text = new TextDecoder().decode(buf);
   if (onProgress) onProgress(1);
-  return new TypingTokenizer(JSON.parse(text));
+  await yieldOnce();
+  return new TypingTokenizer(JSON.parse(new TextDecoder().decode(buf)));
 }

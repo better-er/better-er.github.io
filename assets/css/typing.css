@@ -52,6 +52,10 @@ h1 {
     transition: width 0.15s ease;
 }
 
+.loader-fill.error {
+    background: #e05a5a;
+}
+
 .loader-text {
     text-align: center;
     color: #7b838b;
