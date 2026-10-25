@@ -328,6 +328,15 @@ async function bootApp() {
   await new Promise((r) => setTimeout(r, 100));
   check('切回照打原文不报错且恢复素材行', dom.get('cat-row').hidden === false);
   check('切回后自定义内容仍在', debug.state.customText === custom);
+
+  // 原文长度不设上限，超长内容也不能被截断
+  const longText = '字'.repeat(8000);
+  dom.get('custom-text').value = longText;
+  dom.get('btn-apply-custom').emit('click');
+  await new Promise((r) => setTimeout(r, 500));
+  check('超长原文完整保留', app.targetText().length === longText.length,
+    '实际 ' + app.targetText().length);
+  check('超长原文整段写入 localStorage', app.store.get('typing.customText').length === longText.length);
 }
 
 console.log('\n结果：通过 ' + passed + ' 项，失败 ' + failed + ' 项');

@@ -5,7 +5,6 @@ const TOKENIZER_URL = 'assets/json/deepseek_v4_tokenizer.json';
 const WINDOW_MS = 60000;
 
 const CUSTOM_STORE_KEY = 'typing.customText';
-const CUSTOM_MAX = 5000;
 
 const SAMPLES = {
   zh: [
@@ -372,16 +371,31 @@ function readCustomStore() {
   try {
     return localStorage.getItem(CUSTOM_STORE_KEY) || '';
   } catch (err) {
+    console.warn('读取自定义原文失败：', err);
     return '';
   }
 }
 
+// 返回是否真正写进本地存储，存储写满时原文这次仍可用，只是下次打开不保留
 function writeCustomStore(text) {
   try {
     localStorage.setItem(CUSTOM_STORE_KEY, text);
+    return true;
   } catch (err) {
-    // 本地存储不可用时静默跳过，不影响使用
+    console.warn('保存自定义原文失败：', err);
+    return false;
   }
+}
+
+function updateCustomHint(notice) {
+  if (notice) {
+    el('custom-hint').textContent = notice;
+    return;
+  }
+  const n = el('custom-text').value.length;
+  el('custom-hint').textContent = n > 0
+    ? '共 ' + n + ' 字符 · 内容会存在浏览器本地，下次还能用'
+    : '内容会存在浏览器本地，下次还能用';
 }
 
 function setCat(cat) {
@@ -396,6 +410,7 @@ function setCat(cat) {
     if (saved) {
       el('custom-text').value = saved;
       state.customText = saved;
+      updateCustomHint();
       loadTarget(saved);
     } else {
       // 没存过内容就清空，等用户自己填
@@ -403,6 +418,7 @@ function setCat(cat) {
       el('target-text').innerHTML = '';
       el('target-token-count').textContent = '0';
       el('target-char-count').textContent = '0';
+      updateCustomHint();
       el('custom-text').focus();
     }
     return;
@@ -411,13 +427,14 @@ function setCat(cat) {
 }
 
 function applyCustom() {
-  const text = el('custom-text').value.slice(0, CUSTOM_MAX);
+  const text = el('custom-text').value;
   if (!text.trim()) {
     el('custom-text').focus();
     return;
   }
   state.customText = text;
-  writeCustomStore(text);
+  const saved = writeCustomStore(text);
+  updateCustomHint(saved ? '' : '本地存储写满了，这段原文这次能用，但下次打开不会保留');
   loadTarget(text);
   el('input').focus();
 }
@@ -443,6 +460,7 @@ function bindToolbar() {
     el('input').focus();
   });
   el('btn-apply-custom').addEventListener('click', applyCustom);
+  el('custom-text').addEventListener('input', () => updateCustomHint());
   el('custom-text').addEventListener('keydown', (e) => {
     // Ctrl + Enter 快捷应用
     if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
@@ -473,6 +491,7 @@ async function init() {
   el('app').hidden = false;
   state.customText = readCustomStore();
   if (state.customText) el('custom-text').value = state.customText;
+  updateCustomHint();
   chart = new TokenChart(el('chart'));
   window.addEventListener('resize', () => {
     if (!chart) return;
