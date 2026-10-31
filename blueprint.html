@@ -101,6 +101,17 @@
                 <a class="btn download-btn" href="蓝图/传说铁by电池.txt" download>下载</a>
             </div>
         </div>
+        <div class="file" data-path="蓝图/太空挖矿.txt">
+            <div class="icon">🏭</div>
+            <div class="meta">
+                <div class="filename">太空挖矿</div>
+                <div class="type">Factorio 蓝图</div>
+            </div>
+            <div class="actions">
+                <a class="btn copy-btn">复制</a>
+                <a class="btn download-btn" href="蓝图/太空挖矿.txt" download>下载</a>
+            </div>
+        </div>
     </div>
 
     <div class="footer">
@@ -115,6 +126,7 @@
     const fileEls = document.querySelectorAll('.file');
     for (const el of fileEls) {
         const path = el.dataset.path;
+        if (!path) continue;
         try {
             const resp = await fetch(path);
             fileMap[path] = await resp.text();
